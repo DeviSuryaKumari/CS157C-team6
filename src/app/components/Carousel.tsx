@@ -63,34 +63,34 @@ export default function ProgressSlider({ items }: { items: Item[] }) {
                             leaveTo="opacity-0 scale-95"
                             beforeEnter={() => heightFix()}
                         >
-                            <Image className="rounded-xl" src={item.img} width={500} height={500} alt={item.desc} />
+                            <Image className="rounded-xl" src={item.img} width={500} height={300} alt={item.desc} />
                         </Transition>
                     ))}
                 </div>
             </div>
             {/* Buttons */}
             <div className='flex justify-center items-center'>
-<div className="max-w-xs sm:max-w-sm md:max-w-3xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
-                {items.map((item, index) => (
-                    <button
-                        key={index}
-                        className="p-2 rounded focus:outline-none focus-visible:ring focus-visible:ring-indigo-300 group"
-                        onClick={() => { setActive(index); setProgress(0) }}
-                    >
-                        <span className={`text-center flex flex-col items-center ${active === index ? '' : 'opacity-50 group-hover:opacity-100 group-focus:opacity-100 transition-opacity'}`}>
-                            <span className="flex items-center justify-center relative w-9 h-9 rounded-full bg-indigo-100 mb-2">
-                                <Image src={item.buttonIcon} alt={item.desc} />
+                <div className="max-w-xs sm:max-w-sm md:max-w-3xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
+                    {items.map((item, index) => (
+                        <button
+                            key={index}
+                            className="p-2 rounded focus:outline-none focus-visible:ring focus-visible:ring-indigo-300 group"
+                            onClick={() => { setActive(index); setProgress(0) }}
+                        >
+                            <span className={`text-center flex flex-col items-center ${active === index ? '' : 'opacity-50 group-hover:opacity-100 group-focus:opacity-100 transition-opacity'}`}>
+                                <span className="flex items-center justify-center relative w-9 h-9 rounded-full bg-indigo-100 mb-2">
+                                    <Image src={item.buttonIcon} alt={item.desc} />
+                                </span>
+                                <span className="block text-sm font-medium text-gray-100 mb-2">{item.desc}</span>
+                                <span className="block relative w-full bg-slate-200 h-1 rounded-full" role="progressbar" aria-valuenow={active === index ? progress : 0}>
+                                    <span className="absolute inset-0 bg-indigo-500 rounded-[inherit]" style={{ width: active === index ? `${progress}%` : '0%' }}></span>
+                                </span>
                             </span>
-                            <span className="block text-sm font-medium text-gray-100 mb-2">{item.desc}</span>
-                            <span className="block relative w-full bg-slate-200 h-1 rounded-full" role="progressbar" aria-valuenow={active === index ? progress : 0}>
-                                <span className="absolute inset-0 bg-indigo-500 rounded-[inherit]" style={{ width: active === index ? `${progress}%` : '0%' }}></span>
-                            </span>
-                        </span>
-                    </button>
-                ))}
+                        </button>
+                    ))}
+                </div>
             </div>
-            </div>
-            
+
         </div>
     )
 }
