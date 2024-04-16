@@ -66,7 +66,7 @@ export default function Home() {
             <div className='flex justify-between items-center w-3/4 mx-auto s:mx-auto md:ms-20 lg:ms-20 my-5'>
                 <h1 className="text-4xl text-left text-balance">Recommended Movies</h1>
             </div>
-            <div className="flex flex-col mx-auto px-auto bg-slate-700 rounded-lg w-11/12">
+            <div className="flex flex-col mx-auto px-auto rounded-lg w-11/12">
                 <div className="flex overflow-x-scroll pb-10 hide-scroll-bar">
                     <div className="flex flex-nowrap lg:ml-40 md:ml-20 ml-10 space-x-3 my-2 justify-center">
                         {/* Repeat this div block for each item in your data array */}
@@ -101,7 +101,7 @@ export default function Home() {
             <div className='flex justify-between items-center w-3/4 mx-auto s:mx-auto md:ms-20 lg:ms-20 my-5'>
                 <h1 className="text-4xl text-left text-balance">Top Rated Movies</h1>
             </div>
-            <div className="flex flex-col mx-auto px-auto bg-slate-700 rounded-lg w-11/12">
+            <div className="flex flex-col mx-auto px-auto  rounded-lg w-11/12">
                 <div className="flex overflow-x-scroll pb-10 hide-scroll-bar">
                     <div className="flex flex-nowrap lg:ml-40 md:ml-20 ml-10 space-x-3 my-2 justify-center">
                         {/* Repeat this div block for each item in your data array */}

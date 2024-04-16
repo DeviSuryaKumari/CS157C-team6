@@ -8,7 +8,7 @@ export default function MovieCard() {
     };
 
     return (
-        <div className="w-full max-w-sm hover:outline border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+        <div className="w-full max-w-sm hover:outline border border-gray-200 rounded-lg shadow  dark:border-gray-700">
             <a href="#">
                 <img className="p-8 rounded-t-lg" src="/logo.png" alt="Movie image" />
             </a>
