@@ -11,7 +11,7 @@ export default function SelectionGame() {
     <div className='w-full h-full'>
         <Navbar />
         <div className='flex flex-col justify-center items-center my-12 md:my-24'>
-            <div className='w-11/12 md:w-3/4 h-auto md:h-screen bg-slate-700 px-5 py-5 rounded-lg'>
+            <div className='w-11/12 md:w-3/4 h-auto md:h-screen px-5 py-5 rounded-lg'>
                 <ProgressBar />
                 <div className='flex flex-col items-center md:flex-row justify-between my-5 border border-gray-500 rounded-lg py-5'>
                     <img src="/logo.png" alt="PopcornPicks" className='w-1/3 md:w-1/4 mb-3 md:mb-0 mx-3' />
