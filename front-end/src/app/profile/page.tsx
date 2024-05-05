@@ -1,67 +1,80 @@
 "use client";
 
-import React from 'react'
+import React, {useState, useEffect} from 'react'
 import Navbar from '@/app/components/Navbar'
 import FileUpload from '../components/FileUpload';
+import Cookies from 'js-cookie';
+import axios from 'axios';
 
-interface ProfileDetails {
-  name: string;
+interface UserRetrievedDetails {
   email: string;
-  gender: string;
-  profilePicture: string;
-  birthDate: string;
   username: string;
-}
+  password: string;
+  gender: string;
+  name: string;
+  profilePicture?: string;
+  dateOfBirth: string;
+  initialLogin?: boolean;
+};
 
-function page(props: ProfileDetails) {
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [user, setUser] = React.useState<ProfileDetails>({
-    name: props.name,
-    email: props.email,
-    gender: props.gender,
-    profilePicture: props.profilePicture,
-    birthDate: props.birthDate,
-    username: props.username
-  });
-  const [profileDetails, setProfileDetails] = React.useState<ProfileDetails>({
-    name: '',
-    email: '',
-    gender: '',
-    profilePicture: '',
-    birthDate: '',
-    username: ''
-  });
 
-  const getProfileDetails = async () => { };
+export default function page() {
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isUserDetailsRetrieved, setIsUserDetailsRetrieved] = useState<boolean>(false);
+    interface UserRetrievedDetails {
+        email: string;
+        username: string;
+        password: string;
+        gender: string;
+        name: string;
+        profilePicture?: string;
+        dateOfBirth: string;
+        initialLogin?: boolean;
+      };
+    const [userRetrievedDetails, setUserRetrievedDetails] = useState<UserRetrievedDetails>({
+        email: "",
+        username: "",
+        password: "",
+        initialLogin: false,
+        gender: "",
+        name: "",
+        dateOfBirth: ""
+    });
+    const username = Cookies.get('username');
 
-  const handleUserInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const [name, value] = [e.target.name, e.target.value];
-    if (name === 'age') { // store age as an integer
-      setUser(prev => ({ ...prev, [name]: parseInt(value) }));
-      return;
-    }
-    setUser(prev => ({ ...prev, [name]: value }));
-  };
-  const handleUpdateProfilePicture = (file: File) => {
-    console.log(file);
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setUser(prev => ({ ...prev, profilePicture: reader.result as string }));
+    const getUserDetails = async (username: string) => {
+        await axios.get('http://localhost:8080/users/by-username', {
+          params: {
+            username: username
+          }
+        }).then((response) => {
+            setUserRetrievedDetails(response.data);
+            setIsUserDetailsRetrieved(true);
+        }).catch((error) => {
+            console.log(error);
+        });
     };
-    reader.readAsDataURL(file);
-  };
+    
+    useEffect(() => {
+        if(username !== undefined){
+            getUserDetails(username);
+        }
+    }, []);
 
-  React.useEffect(() => {
-    getProfileDetails();
-  }, []);
+    useEffect(() => {
+        console.log(userRetrievedDetails);
+    }, [userRetrievedDetails]);
 
+    const handleUserInput = (e: React.ChangeEvent<HTMLInputElement>) => {}
+
+    const handleUpdateProfilePicture = (file: File) => {}
 
   return (
     <>
       <div className='w-screen h-screen'>
-        <Navbar />
+        <Navbar/>
         <div className="py-8 my-28">
-          {isLoading ? (
+          {!isLoading ? (
             <div className="flex justify-center items-center">
               <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-600 dark:border-gray-300"></div>
             </div>
@@ -79,7 +92,7 @@ function page(props: ProfileDetails) {
                     <h2 className="text-3xl font-bold text-gray-800 dark:text-white mb-4">Name</h2>
                     <div className="flex items-center justify-center mt-2 w-full">
                       <div className="w-3/4">
-                        <span className="font-bold text-gray-700 dark:text-gray-300">Current Name - {user.name} </span>
+                        <span className="font-bold text-gray-700 dark:text-gray-300">Current Name - {userRetrievedDetails.name} </span>
                         <div className='my-2'>
                           <span className="font-bold text-gray-700 dark:text-gray-300">Update Name </span>
                           <input
@@ -99,7 +112,7 @@ function page(props: ProfileDetails) {
                     <span className="font-bold text-gray-700 dark:text-gray-300">Email</span>
                     <div className="flex items-center justify-center mt-2 w-full">
                       <div className="w-3/4">
-                        <span className="font-bold text-gray-700 dark:text-gray-300">Current Email - {user.email} </span>
+                        <span className="font-bold text-gray-700 dark:text-gray-300">Current Email - {userRetrievedDetails.email} </span>
                         <div className='my-2'>
                           <span className="font-bold text-gray-700 dark:text-gray-300">Update Email </span>
                           <input
@@ -117,7 +130,7 @@ function page(props: ProfileDetails) {
                     <span className="font-bold text-gray-700 dark:text-gray-300">Username</span>
                     <div className="flex items-center justify-center mt-2 w-full">
                       <div className="w-3/4">
-                        <span className="font-bold text-gray-700 dark:text-gray-300">Current Username - {user.username} </span>
+                        <span className="font-bold text-gray-700 dark:text-gray-300">Current Username - {userRetrievedDetails.username} </span>
                         <div className='my-2'>
                           <span className="font-bold text-gray-700 dark:text-gray-300">Update Username </span>
                           <input
@@ -133,10 +146,10 @@ function page(props: ProfileDetails) {
                     </div>
                   </div>
                   <div className="mb-6">
-                    <span className="font-bold text-gray-700 dark:text-gray-300">Birthdate -  {user.birthDate}</span>
+                    <span className="font-bold text-gray-700 dark:text-gray-300">Birthdate -  {userRetrievedDetails.dateOfBirth}</span>
                   </div>
                   <div className="mb-6">
-                    <span className="font-bold text-gray-700 dark:text-gray-300">Gender - {user.gender}</span>
+                    <span className="font-bold text-gray-700 dark:text-gray-300">Gender - {userRetrievedDetails.gender.replace(userRetrievedDetails.gender.charAt(0), userRetrievedDetails.gender.charAt(0).toUpperCase() )}</span>
                   </div>
                   <div className="mb-6">
                     <span className="font-bold text-gray-700 dark:text-gray-300">Edit Profile Picture</span>
@@ -153,5 +166,3 @@ function page(props: ProfileDetails) {
     </>
   )
 }
-
-export default page;
