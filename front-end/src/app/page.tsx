@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { config } from '@fortawesome/fontawesome-svg-core'
 import '@fortawesome/fontawesome-svg-core/styles.css'
 config.autoAddCss = false
-
+import axios from 'axios';
+import { useRouter } from 'next/navigation';
 
 const LoginPage = () => {
   interface User {
@@ -19,6 +20,8 @@ const LoginPage = () => {
     password: "",
     remember: false
   });
+  const router = useRouter();
+  const [successfulLogin, setSuccessfulLogin] = useState<boolean>(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -27,6 +30,36 @@ const LoginPage = () => {
       [name]: type === "checkbox" ? checked : value
     }));
   };
+
+  const login = async (user: User) => {
+    await axios.get('http://localhost:8080/users/by-username', {
+      params: {
+        username: user.username
+      }
+    }).then((response) => {
+      console.log(response.data);
+      if(response.data.password === user.password) {
+        setSuccessfulLogin(true);
+      }
+    }).catch((error) => {
+      console.log(error);
+    });
+  }
+
+  const handleLogin= async (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (user.username === "" || user.password === "") {
+      alert("Please fill in all fields");
+      return;
+    }
+    // Send login request
+    login(user);
+  }
+
+  useEffect(() => {
+    if (successfulLogin) {
+      router.push('/home');
+    }
+  }, [successfulLogin]);
 
 
   return (
@@ -61,12 +94,12 @@ const LoginPage = () => {
               {/* Username Input */}
               <div className="flex flex-col">
                 <label htmlFor="username" className="mb-1">Username</label>
-                <input type="text" onChange={handleInputChange} id="username" name="username" className="border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500" autoComplete="off" />
+                <input type="text" onChange={handleInputChange} id="username" name="username" className="border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500 text-black" autoComplete="off" />
               </div>
               {/* Password Input */}
               <div className="flex flex-col">
                 <label htmlFor="password" className="mb-1">Password</label>
-                <input type="password" onChange={handleInputChange} id="password" name="password" className="border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500" autoComplete="off" />
+                <input type="password" onChange={handleInputChange} id="password" name="password" className="border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500 text-black" autoComplete="off" />
               </div>
               {/* Remember Me Checkbox */}
               <div className="flex items-center">
@@ -78,7 +111,7 @@ const LoginPage = () => {
                 <a href="#" className="hover:underline">Forgot Password?</a>
               </div>
               {/* Login Button */}
-              <button type="submit" className="bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-md py-2 px-4">Login</button>
+              <button type="button" onClick={handleLogin} className="bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-md py-2 px-4">Login</button>
             </form>
             {/* Sign up Link */}
             <div className="text-blue-500 text-center my-3">

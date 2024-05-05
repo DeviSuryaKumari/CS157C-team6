@@ -2,41 +2,45 @@
 
 import React, { useEffect, useState} from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
+import axios from 'axios';
 import DatePicker from '../components/DatePicker';
 import FileUpload from '../components/FileUpload';
+import { useRouter } from 'next/navigation';
+
 
 export default function signup() {
-    interface User {
+        interface User {
         email: string;
         username: string;
         password: string;
         confirmPassword: string;
-        age: number | null;
         gender: string;
         name: string;
         profilePicture?: string;
-        birthDate: string;
+        dateOfBirth: string;
+        is_initial_login?: boolean;
     };
     const [user, setUser] = useState<User>({
         name: '',
-        email: '',
         username: '',
         password: '',
+        email: '',
         confirmPassword: '',
-        age: null,
-        gender: '',
-        birthDate: ''
+        dateOfBirth: '',
+        gender: ''
     });
+    const [successfulAccountCreation, setSuccessfulAccountCreation] = useState<boolean>(false);
+    const router = useRouter();
+
 
     const handleUserInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const [name, value] = [e.target.name, e.target.value];
-        if(name === 'age') { // store age as an integer
-            setUser(prev => ({ ...prev, [name]: parseInt(value) }));
-            return;
-        }
+        const { name, value } = e.target;
         setUser(prev => ({ ...prev, [name]: value }));
     };
+
+    const handleGenderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setUser(prev => ({ ...prev, gender : e.target.value }));
+    }
 
     const handleFileUpload = (file: File) => {
         console.log(file);
@@ -48,8 +52,44 @@ export default function signup() {
     };
 
     const handleBirthDateChange = (date: string) => {
-        setUser(prev => ({ ...prev, birthDate: date }));
+        setUser(prev => ({ ...prev, dateOfBirth: date }));
     }
+    
+
+    const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
+                // Check if all required fields are filled in
+        if(user.name !== '' && user.email !== '' && user.username !== '' && user.password !== '' && user.confirmPassword !== '' && user.dateOfBirth !== '' && user.gender !== '') {
+            if(user.password !== user.confirmPassword) {
+                alert('Passwords do not match');
+                return;
+            }
+            createUser(user);
+        }else{
+            alert('Please fill in all required fields');
+            return;
+        }
+
+        
+    }
+    const createUser = async (user: User) => {
+        // Remove confirmPassword from user object
+        const { confirmPassword, ...userData } = user;
+        try {
+            const response = await axios.put('http://localhost:8080/users/create', userData);
+            setSuccessfulAccountCreation(true);
+            
+        } catch (error) {
+            console.error(error);
+            alert('An error occurred. Please try again');
+        }
+    };
+
+
+    useEffect(() => {
+        if(successfulAccountCreation) {
+            router.push('/');
+        }
+    }, [successfulAccountCreation]);
 
     return (
         <div className="min-h-screen text-gray-900 flex justify-center">
@@ -89,21 +129,24 @@ export default function signup() {
                                 <label className="block text-lg font-medium  text-gray-100 mb-2 mt-5">Select Gender</label>
 
                                 <div className="flex items-center py-2 px-2 border-slate-100  border rounded-lg mt-3">
-                                    <input id="male" onChange={handleUserInput} type="radio" value="male" name="gender" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2" />
+                                    <input id="male" onChange={handleGenderChange} type="radio" value="male" name="gender" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2" />
                                     <label htmlFor="male" className="ms-2 text-sm font-medium text-gray-100">Male</label>
                                 </div>
                                 <div className="flex items-center py-2 px-2 border-slate-100  border rounded-lg mt-3">
-                                    <input id="female" onChange={handleUserInput} type="radio" value="female" name="gender" className="w-4 h-4 text-blue-600  border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+                                    <input id="female" onChange={handleGenderChange} type="radio" value="female" name="gender" className="w-4 h-4 text-blue-600  border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
                                     <label htmlFor="female" className="ms-2 text-sm font-medium text-gray-100">Female</label>
                                 </div>
                                 <div className="flex items-center py-2 px-2 border-slate-100  border rounded-lg mt-3">
-                                    <input id="other" onChange={handleUserInput} type="radio" value="other" name="gender" className="w-4 h-4 text-blue-600  border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+                                    <input id="other" onChange={handleGenderChange} type="radio" value="other" name="gender" className="w-4 h-4 text-blue-600  border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
                                     <label htmlFor="other" className="ms-2 text-sm font-medium text-gray-100">Other</label>
                                 </div>
                                 <label className="block text-lg font-medium  text-gray-100 mb-2 mt-5">Upload Profile Picture</label>
                                 <FileUpload onFileUpload={handleFileUpload}/>
-                                <Link href="/home">
-                                    <button className="mt-5 tracking-wide font-semibold bg-indigo-500 text-gray-100 w-full py-4 rounded-lg hover:bg-indigo-700 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none">
+
+                                    <button 
+                                        className="mt-5 tracking-wide font-semibold bg-indigo-500 text-gray-100 w-full py-4 rounded-lg hover:bg-indigo-700 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none"
+                                        onClick={handleSubmit}
+                                        >
                                         <svg className="w-6 h-6 -ml-2" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                             <path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
                                             <circle cx="8.5" cy="7" r="4" />
@@ -111,7 +154,7 @@ export default function signup() {
                                         </svg>
                                         <span className="ml-3">Sign Up</span>
                                     </button>
-                                </Link>
+
                                 <p className="mt-6 text-sm text-blue-400 text-center">
                                     <a href="/" className="border-b border-gray-500 border-dotted">
                                         Already have an account? Login Here
