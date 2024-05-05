@@ -6,6 +6,7 @@ import '@fortawesome/fontawesome-svg-core/styles.css'
 config.autoAddCss = false
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
+import Cookies from 'js-cookie';
 
 const LoginPage = () => {
   interface User {
@@ -23,6 +24,8 @@ const LoginPage = () => {
   const router = useRouter();
   const [successfulLogin, setSuccessfulLogin] = useState<boolean>(false);
   const [isInitialLogin, setIsInitialLogin] = useState<boolean>(false);
+  
+
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -62,11 +65,13 @@ const LoginPage = () => {
   useEffect(() => {
     if (successfulLogin && isInitialLogin) { // If successful login and is initial login
       // Redirect to user preference selection page
-      router.push('/selection-game');
+      Cookies.set('username', user.username);
+      router.push('/home');
     }
     if(successfulLogin && !isInitialLogin) { // If successful login and not initial login
         // Redirect to home page
         router.push('/home');
+        
     }
     setSuccessfulLogin(false);
   }, [successfulLogin]);
