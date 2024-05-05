@@ -22,6 +22,7 @@ const LoginPage = () => {
   });
   const router = useRouter();
   const [successfulLogin, setSuccessfulLogin] = useState<boolean>(false);
+  const [isInitialLogin, setIsInitialLogin] = useState<boolean>(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -41,6 +42,9 @@ const LoginPage = () => {
       if(response.data.password === user.password) {
         setSuccessfulLogin(true);
       }
+      if (response.data.initialLogin == true) {
+        setIsInitialLogin(true);
+      }
     }).catch((error) => {
       console.log(error);
     });
@@ -56,9 +60,15 @@ const LoginPage = () => {
   }
 
   useEffect(() => {
-    if (successfulLogin) {
-      router.push('/home');
+    if (successfulLogin && isInitialLogin) { // If successful login and is initial login
+      // Redirect to user preference selection page
+      router.push('/selection-game');
     }
+    if(successfulLogin && !isInitialLogin) { // If successful login and not initial login
+        // Redirect to home page
+        router.push('/home');
+    }
+    setSuccessfulLogin(false);
   }, [successfulLogin]);
 
 
