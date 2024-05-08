@@ -6,7 +6,7 @@ import pandas as pd
 url = 'https://www.imdb.com/chart/top/'
 headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'}
 
-response = requests.get(url, headers=headers)
+response = requests.get(url, headers=headers, timeout=(5.05, 22))
 print(f'HTTP GET status code for base url https://www.imdb.com/chart/top/: {response.status_code}')
 ## Status code: 200 means everything is OK
 
@@ -56,37 +56,44 @@ for i in range(250):
 # Visiting each movie url to collect director, writer and actor details
 base_url = 'https://www.imdb.com'
 
+genres = []
 directors = []
-writers = []
+# writers = []
 actors = []
 
 for i in range(250):
     movie_link = base_url + movie_lists_html[i].find('div', class_='cli-children').find('a')['href']
 
     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'}
-    response = requests.get(movie_link, headers=headers)
+    response = requests.get(movie_link, headers=headers, timeout=(5.05, 22))
 
     # print(f'status code for movie url: {response.status_code}')
     parse = BeautifulSoup(response.text, 'html.parser')
 
+    genre = parse.find('div', class_='ipc-chip-list--baseAlt ipc-chip-list')
     director = parse.find_all('li', class_='ipc-metadata-list__item')[0]
-    writer = parse.find_all('li', class_='ipc-metadata-list__item')[1]
+    # writer = parse.find_all('li', class_='ipc-metadata-list__item')[1]
     star = parse.find_all('li', class_='ipc-metadata-list__item')[2]
 
-    director_list = []
-    for items in director.find_all('a', class_='ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link'):
-        director_list.append(items.text+' ')
+    genres_list = []
+    for item in genre.find_all('span', class_='ipc-chip__text'):
+        genres_list.append(item.text + ' ')
 
-    writers_list = []
-    for items in writer.find_all('a', class_='ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link'):
-        writers_list.append(items.text+' ')
+    director_list = []
+    for item in director.find_all('a', class_='ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link'):
+        director_list.append(item.text + ' ')
+
+    # writers_list = []
+    # for item in writer.find_all('a', class_='ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link'):
+    #     writers_list.append(item.text + ' ')
 
     stars_list = []
-    for items in star.find_all('a', class_='ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link'):
-        stars_list.append(items.text+' ')
+    for item in star.find_all('a', class_='ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link'):
+        stars_list.append(item.text + ' ')
         
+    genres.append(genres_list)
     directors.append(director_list)
-    writers.append(writers_list)
+    # writers.append(writers_list)
     actors.append(stars_list)
 
 data = {
@@ -97,7 +104,7 @@ data = {
     'rating': rating,
     'rating_count': num_votes,
     'directors': directors,
-    'writers': writers,
+    'genres': genres,
     'actors': actors
 }
 
