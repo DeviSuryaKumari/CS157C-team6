@@ -102,4 +102,5 @@ data = {
 }
 
 movie_df = pd.DataFrame(data)
+movie_df.to_csv('Top-250-movies.csv')
 print(movie_df)
