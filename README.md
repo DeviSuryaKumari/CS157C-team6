@@ -7,7 +7,7 @@ Entities/Node Labels (comma-separated attributes):
 1. Movie (title, released, genres) --> With uniqueness constraint on title property
 2. Actor (name) --> With uniqueness constraint on name property
 3. Director (name) --> With uniqueness constraint on name property
-4. User (username, email, password, name, dob, gender, is_initial_login, profilePicture) --> With existence and uniqueness constraints on username property
+4. User (username, email, password, name, dob, gender, is_initial_login, profilePicture, likedMovies, dislikedMovies, watchLaterMovies, followers, followedUsers) --> With existence and uniqueness constraints on username property
 
 Schema Visualization:
 ---------------------
