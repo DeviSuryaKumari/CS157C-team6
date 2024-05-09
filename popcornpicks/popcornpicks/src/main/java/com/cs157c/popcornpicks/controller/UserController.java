@@ -4,7 +4,11 @@ import com.cs157c.popcornpicks.model.MovieEntity;
 import com.cs157c.popcornpicks.model.UserEntity;
 import com.cs157c.popcornpicks.repository.MovieRepository;
 import com.cs157c.popcornpicks.repository.UserRepository;
-import org.springframework.http.MediaType;
+
+import java.time.Instant;
+import java.util.List;
+
+//import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -13,9 +17,10 @@ import reactor.core.publisher.Mono;
 @RequestMapping("/users")
 public class UserController {
     private final UserRepository userRepository;
-
-    public UserController(UserRepository userRepository) {
+    private final MovieRepository movieRepository;
+    public UserController(UserRepository userRepository, MovieRepository movieRepository) {
         this.userRepository = userRepository;
+        this.movieRepository = movieRepository;
     }
 
 
@@ -42,5 +47,17 @@ public class UserController {
     @GetMapping(value = "/followers-by-username", produces = "application/json")
     Flux<UserEntity> followersByUsername(@RequestParam String username) {
         return userRepository.findUsersFollowersByUsername(username);
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @PutMapping("/like-movies")
+    public Mono<UserEntity> likeMovies(@RequestParam String username, @RequestParam List<Integer> movieIds) {
+        return userRepository.likeMovies(username, movieIds);
+    }
+    
+    @CrossOrigin(origins = "http://localhost:3000")
+    @PutMapping("/dislike-movies")
+    public Mono<UserEntity> dislikeMovies(@RequestParam String username, @RequestParam List<Integer> movieIds) {
+        return userRepository.dislikeMovies(username, movieIds);
     }
 }
