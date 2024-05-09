@@ -2,12 +2,7 @@ package com.cs157c.popcornpicks.repository;
 
 import org.springframework.data.neo4j.repository.ReactiveNeo4jRepository;
 import org.springframework.data.neo4j.repository.query.Query;
-
 import com.cs157c.popcornpicks.model.MovieEntity;
-
-
-import org.springframework.data.neo4j.repository.query.Query;
-
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -19,5 +14,4 @@ public interface MovieRepository extends ReactiveNeo4jRepository<MovieEntity, St
 	Mono<MovieEntity> findByTitle(String title);
 
 	Mono<Void> deleteByTitle(String title);
-
 }

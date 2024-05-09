@@ -1,14 +1,6 @@
 package com.cs157c.popcornpicks.controller;
 
-
-//import org.neo4j.driver.types.Entity;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-//import org.springframework.web.bind.annotation.PathVariable;
-
 import com.cs157c.popcornpicks.model.MovieEntity;
 import com.cs157c.popcornpicks.repository.MovieRepository;
 
@@ -22,8 +14,6 @@ public class MovieController {
 	public MovieController(MovieRepository movieRepository) {
 		this.movieRepository = movieRepository;
 	}
-
-
 
     @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping("/all")
