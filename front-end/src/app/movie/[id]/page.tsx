@@ -10,16 +10,15 @@ import Cookies from 'js-cookie';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
 interface Movie {
-    movie_id: number;
-    movie_title: string;
+    id: number;
+    title: string;
     plot: string;
     genres: string[];
-    released_year: number;
+    releasedYear: number;
     rating: number;
-    poster: string;
     duration: string;
-    certificate_type: string;
-    rating_count: string;
+    certificateType: string;
+    ratingCount: string;
 }
 
 
@@ -71,16 +70,15 @@ export default function Movie() {
     const params = useParams<{ id: string }>();
     const movieID = params.id.toString();
     const [movie, setMovie] = useState<Movie>({
-        movie_id: 0,
-        movie_title: "",
+        id: 0,
+        title: "",
         plot: "",
         genres: [],
-        released_year: 0,
+        releasedYear: 0,
         rating: 0,
-        poster: "",
         duration: "",
-        certificate_type: "",
-        rating_count: ""
+        certificateType: "",
+        ratingCount: ""
     });
     const [isMovieDetailsRetrieved, setIsMovieDetailsRetrieved] = useState<boolean>(false);
 
@@ -101,7 +99,7 @@ export default function Movie() {
     }, []);
 
     useEffect(() => {
-        if(movie.movie_title !== "") {
+        if(movie.title !== "") {
             setIsMovieDetailsRetrieved(true);
         }
     }, [movie]);
@@ -131,7 +129,7 @@ export default function Movie() {
                                 </div>
                             </div>
                             <div className="md:flex-1 px-4">
-                                <h2 className="text-3xl font-bold text-gray-800 dark:text-white mb-2">{movie.movie_title}</h2>
+                                <h2 className="text-3xl font-bold text-gray-800 dark:text-white mb-2">{movie.title}</h2>
                                 <p className="text-gray-600 dark:text-gray-300 text-sm mb-4">
                                     {movie.plot}
                                 </p>
@@ -141,7 +139,7 @@ export default function Movie() {
                                         <span className='text-gray-300 font-semibold'>Rating: <FontAwesomeIcon icon={faStar} size='sm' className='text-yellow-500 mr-1' />{movie.rating}</span>
                                     </div>
                                     <div>
-                                        <span className='text-gray-300 font-semibold'>{movie.rating_count} Ratings</span>
+                                        <span className='text-gray-300 font-semibold'>{movie.ratingCount} Ratings</span>
                                     </div>
                                     <div>
                                         <span className='text-gray-300 font-semibold'>Duration: {movie.duration}</span>
