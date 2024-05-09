@@ -17,6 +17,7 @@ public class UserEntity {
     private String dateOfBirth;
     private String gender;
     private boolean isInitialLogin;
+    private String profilePicture;
     @Relationship(type = "LIKED", direction = Relationship.Direction.OUTGOING)
     private Set<MovieEntity> likedMovies = new HashSet<>();
     @Relationship(type = "DISLIKED", direction = Relationship.Direction.OUTGOING)
@@ -25,14 +26,21 @@ public class UserEntity {
     @Relationship(type = "FOLLOWS", direction = Relationship.Direction.OUTGOING)
     private Set<UserEntity> followedUsers = new HashSet<>();
 
-    public UserEntity(String name, String username, String password, String email, String dateOfBirth, String gender) {
+    @Relationship(type = "FOLLOWED_BY", direction = Relationship.Direction.INCOMING)
+    private Set<UserEntity> followers = new HashSet<>();
+
+    @Relationship(type = "WATCH_LATER", direction = Relationship.Direction.OUTGOING)
+    private Set<MovieEntity> watchLaterMovies = new HashSet<>();
+
+    public UserEntity(String name, String username, String password, String email, String dateOfBirth, String gender, boolean isInitialLogin, String profilePicture) {
         this.name = name;
         this.username = username;
         this.password = password;
         this.email = email;
         this.dateOfBirth = dateOfBirth;
         this.gender = gender;
-        this.isInitialLogin = true; // users have an initial login status of true at creation time
+        this.isInitialLogin = isInitialLogin;
+        this.profilePicture = profilePicture;
     }
 
     public String getName() {
@@ -91,6 +99,14 @@ public class UserEntity {
         isInitialLogin = initialLogin;
     }
 
+    public String getProfilePicture() {
+        return profilePicture;
+    }
+
+    public void setProfilePicture(String profilePicture) {
+        this.profilePicture = profilePicture;
+    }
+
     public Set<MovieEntity> getLikedMovies() {
         return likedMovies;
     }
@@ -113,5 +129,13 @@ public class UserEntity {
 
     public void setFollowedUsers(Set<UserEntity> followedUsers) {
         this.followedUsers = followedUsers;
+    }
+
+    public Set<MovieEntity> getWatchLaterMovies() {
+        return watchLaterMovies;
+    }
+
+    public void setWatchLaterMovies(Set<MovieEntity> watchLaterMovies) {
+        this.watchLaterMovies = watchLaterMovies;
     }
 }
