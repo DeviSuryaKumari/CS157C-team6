@@ -11,16 +11,13 @@ import org.springframework.data.neo4j.repository.query.Query;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-public interface MovieRepository extends ReactiveNeo4jRepository<MovieEntity, Integer> {
+public interface MovieRepository extends ReactiveNeo4jRepository<MovieEntity, String> {
 
 	@Query("MATCH (m:Movie) RETURN m ORDER BY m.rating DESC LIMIT 50")
 	Flux<MovieEntity> getTop50Movies();
 
-	@Query("MATCH (m:Movie) WHERE m.movie_id = $movie_id RETURN m")
-	Mono<MovieEntity> findByMovie_id(int movie_id);
+	Mono<MovieEntity> findByTitle(String title);
 
-	Mono<MovieEntity> findOneByTitle(String title);
 	Mono<Void> deleteByTitle(String title);
-	Mono<MovieEntity> findOneById(int id);
 
 }

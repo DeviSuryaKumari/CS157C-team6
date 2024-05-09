@@ -1,23 +1,19 @@
 package com.cs157c.popcornpicks.model;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.List;
 
 //import org.neo4j.ogm.annotation.GraphId;
 //import org.neo4j.ogm.annotation.NodeEntity;
 //import org.neo4j.ogm.annotation.Property;
 //import org.neo4j.ogm.annotation.Relationship;
-import org.springframework.data.annotation.Id;
+import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
-import org.springframework.data.neo4j.core.schema.Relationship;
 
 @Node("Movie")
 public class MovieEntity {
+
 	@Id
-	private final int movie_id;
-	//@Property("year") 
-	private final String movie_title;
+	private final String title;
 	private final int released_year;
 	private final String duration;
 	private final String certificate_type;
@@ -28,64 +24,54 @@ public class MovieEntity {
 	private final List<String> genres;
 	//private final List<String> actors;
 	private final String plot;
+	private final String poster;
 
-	//@Property("tagline")
-	//private final String description;
-	//@Relationship(type = "ACTED_IN", direction = Relationship.Direction.INCOMING)
-	//private Set<PersonEntity> actors = new HashSet<>();
-	//@Relationship(type = "DIRECTED", direction = Relationship.Direction.INCOMING)
-	//private Set<PersonEntity> directors = new HashSet<>();
-	
 
-	public MovieEntity(int movie_id, String movie_title, int released_year, String duration, String certificate_type, double rating, String rating_count, String plot, List<String> genres) {
-
-		this.movie_id = movie_id;
-		this.movie_title = movie_title;
+	public MovieEntity(String title, int released_year, String duration, String certificate_type, double rating, String rating_count, List<String> genres, String plot, String poster) {
+		this.title = title;
 		this.released_year = released_year;
 		this.duration = duration;
 		this.certificate_type = certificate_type;
 		this.rating = rating;
 		this.rating_count = rating_count;
-		this.plot = plot;
 		this.genres = genres;
+		this.plot = plot;
+		this.poster = poster;
 	}
-	//Getters omitted for brevity
 
+	public String getTitle() {
+		return title;
+	}
 
-    public int getId() {
-        return movie_id;
-    }
+	public int getReleased_year() {
+		return released_year;
+	}
 
+	public String getDuration() {
+		return duration;
+	}
+
+	public String getCertificate_type() {
+		return certificate_type;
+	}
+
+	public double getRating() {
+		return rating;
+	}
+
+	public String getRating_count() {
+		return rating_count;
+	}
 
 	public List<String> getGenres() {
 		return genres;
 	}
 
-	public String getTitle() {
-        return movie_title;
-    }
-
-    public int getReleasedYear() {
-        return released_year;
-    }
-
-	public String getDuration() {
-        return duration;
-    }
-
-	public String getCertificateType() {
-        return certificate_type;
-    }
-
-	public double getRating() {
-        return rating;
-    }
-
-	public String getRatingCount() {
-        return rating_count;
-    }
-
 	public String getPlot() {
-        return plot;
-    }
+		return plot;
+	}
+
+	public String getPoster() {
+		return poster;
+	}
 }
