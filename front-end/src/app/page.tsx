@@ -70,6 +70,7 @@ const LoginPage = () => {
     }
     if(successfulLogin && !isInitialLogin) { // If successful login and not initial login
         // Redirect to home page
+        Cookies.set('username', user.username);
         router.push('/home');
         
     }

@@ -1,33 +1,36 @@
 "use client";
 
-import React, { useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import axios from 'axios';
 import DatePicker from '../components/DatePicker';
 import FileUpload from '../components/FileUpload';
 import { useRouter } from 'next/navigation';
+import AWS from 'aws-sdk';
 
 
 export default function signup() {
-        interface User {
+    interface User {
         email: string;
         username: string;
         password: string;
         confirmPassword: string;
         gender: string;
         name: string;
-        profilePicture?: string;
+        profilePicture: string;
         dateOfBirth: string;
-        is_initial_login?: boolean;
+        initialLogin: boolean;
     };
     const [user, setUser] = useState<User>({
         name: '',
         username: '',
         password: '',
         email: '',
+        initialLogin: true,
         confirmPassword: '',
         dateOfBirth: '',
-        gender: ''
+        gender: '',
+        profilePicture: 'https://popcorn-picks.s3.us-west-1.amazonaws.com/default_profile_pic.jpg', // Default profile picture if none is provided
     });
     const [successfulAccountCreation, setSuccessfulAccountCreation] = useState<boolean>(false);
     const router = useRouter();
@@ -39,44 +42,83 @@ export default function signup() {
     };
 
     const handleGenderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setUser(prev => ({ ...prev, gender : e.target.value }));
+        setUser(prev => ({ ...prev, gender: e.target.value }));
     }
-
-    const handleFileUpload = (file: File) => {
-        console.log(file);
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            setUser(prev => ({ ...prev, profilePicture: reader.result as string }));
-        };
-        reader.readAsDataURL(file);
-    };
-
     const handleBirthDateChange = (date: string) => {
         setUser(prev => ({ ...prev, dateOfBirth: date }));
     }
+
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (event.target.files && event.target.files.length > 0) {
+          if (event.target.files[0].type !== 'image/png' && event.target.files[0].type !== 'image/jpeg' && event.target.files[0].type !== 'image/jpg') {
+            alert('Please upload a valid image file. Supported formats are PNG, JPEG, and JPG.');
+          } else {
+            setSelectedFile(event.target.files[0]);
+          }
+    
+        }
+    };
+
+    const handleUpload = async () => {
+        if (!selectedFile) return;
+    
+        const selectedFileExtension = selectedFile.name.split('.').pop();
+        const s3 = new AWS.S3({
+            accessKeyId: 'AKIAUADVGEK7VV4QQFQZ',
+            secretAccessKey: '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',
+            region: 'us-west-1',
+        });
+    
+        const params = {
+            Bucket: 'popcorn-picks',
+            Key: `${user.username}_${selectedFile.name.substring(0, selectedFile.name.indexOf("."))}_${Date.now()}.${selectedFileExtension}`,
+            Body: selectedFile
+        };
+    
+        try {
+            const data = await s3.upload(params).promise(); // Wait for the upload to finish
+            return data.Location; // Return the URL of the uploaded image
+        } catch (error) {
+            console.error('Error uploading file:', error);
+            // Handle the error here, e.g., display an error message to the user
+            return null; // Return null if there was an error
+        }
+    }
     
 
+
     const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
-                // Check if all required fields are filled in
-        if(user.name !== '' && user.email !== '' && user.username !== '' && user.password !== '' && user.confirmPassword !== '' && user.dateOfBirth !== '' && user.gender !== '') {
-            if(user.password !== user.confirmPassword) {
+        // Check if all required fields are filled in
+        if (user.name !== '' && user.email !== '' && user.username !== '' && user.password !== '' && user.confirmPassword !== '' && user.dateOfBirth !== '' && user.gender !== '') {
+            if (user.password !== user.confirmPassword) {
                 alert('Passwords do not match');
                 return;
             }
             createUser(user);
-        }else{
+        } else {
             alert('Please fill in all required fields');
             return;
         }
 
-        
+
     }
     const createUser = async (user: User) => {
         // Remove confirmPassword from user object
         const { confirmPassword, ...userData } = user;
         try {
-            const response = await axios.put('http://localhost:8080/users/create', userData);
-            setSuccessfulAccountCreation(true);
+            if(selectedFile) {
+                const profilePicURL = await handleUpload();
+                if (profilePicURL) {
+                    await axios.put('http://localhost:8080/users/create', { ...userData, profilePicture: profilePicURL });
+                    setSuccessfulAccountCreation(true);
+                } else {
+                    alert('An error occurred while uploading the profile picture. Please try again');
+                    return;
+                }
+
+            }
             
         } catch (error) {
             console.error(error);
@@ -86,10 +128,12 @@ export default function signup() {
 
 
     useEffect(() => {
-        if(successfulAccountCreation) {
+        if (successfulAccountCreation) {
             router.push('/');
         }
     }, [successfulAccountCreation]);
+
+
 
     return (
         <div className="min-h-screen text-gray-900 flex justify-center">
@@ -106,25 +150,25 @@ export default function signup() {
                             Sign up
                         </h1>
                         <div className="w-full flex-1 mt-8">
-                            
+
 
                             <div className="mx-auto max-w-xs">
-                            <input
-                                    className="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white mt-5"
-                                    type="text" name="name" placeholder="Name" onChange={handleUserInput}/>
                                 <input
                                     className="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white mt-5"
-                                    type="email" name="email" placeholder="Email" onChange={handleUserInput}/>
+                                    type="text" name="name" placeholder="Name" onChange={handleUserInput} />
                                 <input
                                     className="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white mt-5"
-                                    type="text" name="username" placeholder="Username" onChange={handleUserInput}/>
+                                    type="email" name="email" placeholder="Email" onChange={handleUserInput} />
                                 <input
                                     className="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white mt-5"
-                                    type="password" name="password" placeholder="Password" onChange={handleUserInput}/>
+                                    type="text" name="username" placeholder="Username" onChange={handleUserInput} />
                                 <input
                                     className="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white mt-5"
-                                    type="password" name="confirmPassword" placeholder="Confirm Password" onChange={handleUserInput}/>
-                                <DatePicker handleDateChange={handleBirthDateChange}/>
+                                    type="password" name="password" placeholder="Password" onChange={handleUserInput} />
+                                <input
+                                    className="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white mt-5"
+                                    type="password" name="confirmPassword" placeholder="Confirm Password" onChange={handleUserInput} />
+                                <DatePicker handleDateChange={handleBirthDateChange} />
 
                                 <label className="block text-lg font-medium  text-gray-100 mb-2 mt-5">Select Gender</label>
 
@@ -141,19 +185,19 @@ export default function signup() {
                                     <label htmlFor="other" className="ms-2 text-sm font-medium text-gray-100">Other</label>
                                 </div>
                                 <label className="block text-lg font-medium  text-gray-100 mb-2 mt-5">Upload Profile Picture</label>
-                                <FileUpload onFileUpload={handleFileUpload}/>
+                                <FileUpload onFileUpload={handleFileChange} />
 
-                                    <button 
-                                        className="mt-5 tracking-wide font-semibold bg-indigo-500 text-gray-100 w-full py-4 rounded-lg hover:bg-indigo-700 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none"
-                                        onClick={handleSubmit}
-                                        >
-                                        <svg className="w-6 h-6 -ml-2" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                            <path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
-                                            <circle cx="8.5" cy="7" r="4" />
-                                            <path d="M20 8v6M23 11h-6" />
-                                        </svg>
-                                        <span className="ml-3">Sign Up</span>
-                                    </button>
+                                <button
+                                    className="mt-5 tracking-wide font-semibold bg-indigo-500 text-gray-100 w-full py-4 rounded-lg hover:bg-indigo-700 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none"
+                                    onClick={handleSubmit}
+                                >
+                                    <svg className="w-6 h-6 -ml-2" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+                                        <circle cx="8.5" cy="7" r="4" />
+                                        <path d="M20 8v6M23 11h-6" />
+                                    </svg>
+                                    <span className="ml-3">Sign Up</span>
+                                </button>
 
                                 <p className="mt-6 text-sm text-blue-400 text-center">
                                     <a href="/" className="border-b border-gray-500 border-dotted">
