@@ -66,8 +66,8 @@ export default function signup() {
     
         const selectedFileExtension = selectedFile.name.split('.').pop();
         const s3 = new AWS.S3({
-            accessKeyId: 'ACCESS_KEY',
-            secretAccessKey: 'SECRET_KEY',
+            accessKeyId: '',
+            secretAccessKey: '',
             region: 'us-west-1',
           });
     
