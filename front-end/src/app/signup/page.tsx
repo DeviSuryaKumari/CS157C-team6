@@ -66,10 +66,10 @@ export default function signup() {
     
         const selectedFileExtension = selectedFile.name.split('.').pop();
         const s3 = new AWS.S3({
-            accessKeyId: 'AKIAUADVGEK7VV4QQFQZ',
-            secretAccessKey: '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',
+            accessKeyId: 'ACCESS_KEY',
+            secretAccessKey: 'SECRET_KEY',
             region: 'us-west-1',
-        });
+          });
     
         const params = {
             Bucket: 'popcorn-picks',
