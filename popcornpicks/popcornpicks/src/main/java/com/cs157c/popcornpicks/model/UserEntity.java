@@ -14,9 +14,9 @@ public class UserEntity {
     private String username;
     private String password;
     private String email;
-    private String dateOfBirth;
+    private Integer age;
     private String gender;
-    private boolean isInitialLogin;
+    private String isInitialLogin;
     private String profilePicture;
     @Relationship(type = "LIKED", direction = Relationship.Direction.OUTGOING)
     private Set<MovieEntity> likedMovies = new HashSet<>();
@@ -32,12 +32,12 @@ public class UserEntity {
     @Relationship(type = "WATCH_LATER", direction = Relationship.Direction.OUTGOING)
     private Set<MovieEntity> watchLaterMovies = new HashSet<>();
 
-    public UserEntity(String name, String username, String password, String email, String dateOfBirth, String gender, boolean isInitialLogin, String profilePicture) {
+    public UserEntity(String name, String username, String password, String email, Integer age, String gender, String isInitialLogin, String profilePicture) {
         this.name = name;
         this.username = username;
         this.password = password;
         this.email = email;
-        this.dateOfBirth = dateOfBirth;
+        this.age = age;
         this.gender = gender;
         this.isInitialLogin = isInitialLogin;
         this.profilePicture = profilePicture;
@@ -75,12 +75,12 @@ public class UserEntity {
         this.email = email;
     }
 
-    public String getDateOfBirth() {
-        return dateOfBirth;
+    public Integer getAge() {
+        return age;
     }
 
-    public void setDateOfBirth(String dateOfBirth) {
-        this.dateOfBirth = dateOfBirth;
+    public void setAge(Integer age) {
+        this.age = age;
     }
 
     public String getGender() {
@@ -91,12 +91,12 @@ public class UserEntity {
         this.gender = gender;
     }
 
-    public boolean isInitialLogin() {
+    public String getIsInitialLogin() {
         return isInitialLogin;
     }
 
-    public void setInitialLogin(boolean initialLogin) {
-        isInitialLogin = initialLogin;
+    public void setIsInitialLogin(String isInitialLogin) {
+        this.isInitialLogin = isInitialLogin;
     }
 
     public String getProfilePicture() {
@@ -129,6 +129,14 @@ public class UserEntity {
 
     public void setFollowedUsers(Set<UserEntity> followedUsers) {
         this.followedUsers = followedUsers;
+    }
+
+    public Set<UserEntity> getFollowers() {
+        return followers;
+    }
+
+    public void setFollowers(Set<UserEntity> followers) {
+        this.followers = followers;
     }
 
     public Set<MovieEntity> getWatchLaterMovies() {

@@ -10,7 +10,6 @@ import Cookies from 'js-cookie';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
 interface Movie {
-    id: number;
     title: string;
     plot: string;
     genres: string[];
@@ -19,6 +18,7 @@ interface Movie {
     duration: string;
     certificateType: string;
     ratingCount: string;
+    poster: string;
 }
 
 
@@ -68,9 +68,9 @@ export default function Movie() {
     }, []);
 
     const params = useParams<{ id: string }>();
-    const movieID = params.id.toString();
+    const movieTitle = params.id;
+    console.log(movieTitle);
     const [movie, setMovie] = useState<Movie>({
-        id: 0,
         title: "",
         plot: "",
         genres: [],
@@ -78,12 +78,13 @@ export default function Movie() {
         rating: 0,
         duration: "",
         certificateType: "",
-        ratingCount: ""
+        ratingCount: "",
+        poster: ""
     });
     const [isMovieDetailsRetrieved, setIsMovieDetailsRetrieved] = useState<boolean>(false);
 
-    const getMovieDetails = async (movieID: string) => {
-        await axios.get(`http://localhost:8080/movies/${parseInt(movieID)}`, {
+    const getMovieDetails = async (movieTitle: string) => {
+        await axios.get(`http://localhost:8080/movies/${movieTitle}`, {
         }).then((response) => {
             setMovie(response.data);
             setIsMovieDetailsRetrieved(true);
@@ -93,14 +94,16 @@ export default function Movie() {
     }
 
     useEffect(() => {
-        if (movieID !== undefined) {
-            getMovieDetails(movieID);
-        }
+        const getMovie = async () => {
+            await getMovieDetails(movieTitle);
+        };
+        getMovie();
     }, []);
 
     useEffect(() => {
         if(movie.title !== "") {
             setIsMovieDetailsRetrieved(true);
+            console.log(movie);
         }
     }, [movie]);
 
@@ -108,7 +111,7 @@ export default function Movie() {
         <div className='w-screen h-screen'>
             <Navbar profilePicture={userRetrievedDetails.profilePicture} />
             <div className="py-8 my-28">
-                {!isUserDetailsRetrieved ? (
+                {!isUserDetailsRetrieved && isMovieDetailsRetrieved ? (
                     <div className="flex justify-center items-center">
                         <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-600 dark:border-gray-300"></div>
                     </div>
@@ -117,7 +120,7 @@ export default function Movie() {
                         <div className="flex flex-col md:flex-row -mx-4">
                             <div className="md:flex-1 px-4">
                                 <div className="h-[460px] rounded-lg bg-gray-300 dark:bg-gray-700 mb-4">
-                                    <img className="w-full h-full object-contain" src="\logo.png" alt="Movie Image" />
+                                    <img className="w-full h-full object-contain" src={movie.poster} alt="Movie Image" />
                                 </div>
                                 <div className="flex -mx-2 mb-4">
                                     <div className="w-1/2 px-2">
@@ -165,6 +168,7 @@ export default function Movie() {
                                             movie.genres.map((genre, index) => (
                                                 <span key={index} className="text-xs font-medium me-2 px-2.5 py-0.5 rounded-full bg-blue-900 text-blue-300">{genre}</span>
                                             ))
+                                    
                                         
                                         }
                                     </div>

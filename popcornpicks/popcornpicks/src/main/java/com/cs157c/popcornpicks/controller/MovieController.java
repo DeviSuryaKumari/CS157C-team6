@@ -39,9 +39,9 @@ public class MovieController {
 
 
     @CrossOrigin(origins = "http://localhost:3000")
-    @GetMapping("/{movie_id}")
-    public Mono<MovieEntity> getMovieById(@PathVariable int movie_id) {
-        return movieRepository.findByMovie_id(movie_id);
+    @GetMapping("/{title}")
+    public Mono<MovieEntity> getMovieByTitle(@PathVariable String title) {
+        return movieRepository.findByTitle(title);
     }
 
 }

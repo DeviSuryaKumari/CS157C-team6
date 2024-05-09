@@ -5,9 +5,9 @@ import Image, { StaticImageData } from 'next/image'
 import { Transition } from '@headlessui/react'
 
 interface Item {
-    img: StaticImageData
+    img: string
     desc: string
-    buttonIcon: StaticImageData
+
 }
 
 export default function ProgressSlider({ items }: { items: Item[] }) {
@@ -63,7 +63,7 @@ export default function ProgressSlider({ items }: { items: Item[] }) {
                             leaveTo="opacity-0 scale-95"
                             beforeEnter={() => heightFix()}
                         >
-                            <Image className="rounded-xl" src={item.img} width={500} height={300} alt={item.desc} />
+                            <img className="rounded-xl w-full h-full pb-10" src={item.img} width={500} height={300} alt={item.desc} />
                         </Transition>
                     ))}
                 </div>

@@ -4,12 +4,6 @@ import React, { use, useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
 import Carousel from '../components/Carousel';
 import { StaticImageData } from 'next/image';
-import Image1 from '../../../public/logo.png';
-import Image2 from '../../../public/logo.png';
-import Image3 from '../../../public/logo.png';
-import ButtonIcon1 from '../../../public/logo.png';
-import ButtonIcon2 from '../../../public/logo.png';
-import ButtonIcon3 from '../../../public/logo.png';
 import MovieCard from '../components/MovieCard';
 import '@fortawesome/fontawesome-svg-core/styles.css'
 import axios from 'axios';
@@ -19,9 +13,8 @@ import { get } from 'http';
 
 export default function Home() {
     interface Item {
-        img: StaticImageData;
+        img: string;
         desc: string;
-        buttonIcon: StaticImageData;
     }
     interface User {
         email: string;
@@ -49,17 +42,18 @@ export default function Home() {
         initialLogin: boolean;
     };
     interface Movie {
-        movie_id: number;
-        movie_title: string;
+        title: string;
         plot: string;
         genres: string[];
         released_year: number;
         rating: number;
-        poster: string;
         duration: string;
         certificate_type: string;
         rating_count: string;
+        poster: string;
     }
+
+
     const [topRatedMovies, setTopRatedMovies] = useState<Movie[]>([]);
     const [userRetrievedDetails, setUserRetrievedDetails] = useState<UserRetrievedDetails>({
         email: "",
@@ -114,9 +108,8 @@ export default function Home() {
         const items: Item[] = [];
         top5RatedMovies.forEach((movie) => {
             let item: Item = {
-                img: Image1,
-                desc: movie.movie_title,
-                buttonIcon: ButtonIcon1
+                img: movie.poster,
+                desc: movie.title
             };
             items.push(item);
         });
@@ -171,12 +164,8 @@ export default function Home() {
                         </div>
                     </Link>
                     <Navbar profilePicture={userRetrievedDetails.profilePicture} />
-                    <div className='flex justify-center items-center mt-10'>
-                        <h1 className="text-3xl w-fit font-mono mt-12">
-                            Top 5 Rated Movies
-                        </h1>
-                    </div>
-                    <div className="justify-center items-center my-10 mx-5" id="carousel">
+
+                    <div className="justify-center items-center mt-52 mx-5" id="carousel">
                         <Carousel items={carrouselItems!!} />
                     </div>
 
