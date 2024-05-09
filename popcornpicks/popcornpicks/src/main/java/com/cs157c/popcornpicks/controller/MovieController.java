@@ -3,6 +3,7 @@ package com.cs157c.popcornpicks.controller;
 
 //import org.neo4j.driver.types.Entity;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 //import org.springframework.web.bind.annotation.PathVariable;
@@ -40,9 +41,20 @@ public class MovieController {
     Mono<MovieEntity> byTitle(@RequestParam String title) {
         return movieRepository.findOneByTitle(title);
     }
-
+    
+    @GetMapping("/by-id")
+    Mono<MovieEntity> byTitle(@RequestParam int id) {
+        return movieRepository.findOneById(id);
+    }
     @DeleteMapping("/delete")
     Mono<Void> deleteByTitle(@RequestParam String title) {
         return movieRepository.deleteByTitle(title);
     }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @GetMapping("/top50")
+    public Flux<MovieEntity> getTop50Movies() {
+        return movieRepository.getTop50Movies();
+    }
+    
 }
