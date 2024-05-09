@@ -2,18 +2,19 @@ package com.cs157c.popcornpicks.controller;
 
 
 //import org.neo4j.driver.types.Entity;
-import org.springframework.http.MediaType;
+import com.cs157c.popcornpicks.model.DirectorEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 //import org.springframework.web.bind.annotation.PathVariable;
 
 import com.cs157c.popcornpicks.model.MovieEntity;
-import com.cs157c.popcornpicks.repository.MovieRepository;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import com.cs157c.popcornpicks.repository.MovieRepository;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/movies")
@@ -42,6 +43,24 @@ public class MovieController {
     @GetMapping("/{title}")
     public Mono<MovieEntity> getMovieByTitle(@PathVariable String title) {
         return movieRepository.findByTitle(title);
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @GetMapping("/genres")
+    public Flux<List<?>> getGenres() {
+        return movieRepository.getGenres();
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @GetMapping("/director/{title}")
+    public Flux<DirectorEntity> getDirectorByMovieTitle(@PathVariable String title) {
+        return movieRepository.getDirectorByMovieTitle(title);
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @GetMapping("/actors/{title}")
+    public Flux<DirectorEntity> getActorsByMovieTitle(@PathVariable String title) {
+        return movieRepository.getActorsByMovieTitle(title);
     }
 
 }
