@@ -24,6 +24,7 @@ public class MovieEntity {
 	private final double rating;
 	private final String rating_count;
 	//private final List<String> directors;
+
 	private final List<String> genres;
 	//private final List<String> actors;
 	private final String plot;
@@ -35,7 +36,9 @@ public class MovieEntity {
 	//@Relationship(type = "DIRECTED", direction = Relationship.Direction.INCOMING)
 	//private Set<PersonEntity> directors = new HashSet<>();
 	
+
 	public MovieEntity(int movie_id, String movie_title, int released_year, String duration, String certificate_type, double rating, String rating_count, String plot, List<String> genres) {
+
 		this.movie_id = movie_id;
 		this.movie_title = movie_title;
 		this.released_year = released_year;
@@ -52,6 +55,7 @@ public class MovieEntity {
     public int getId() {
         return movie_id;
     }
+
 
 	public List<String> getGenres() {
 		return genres;

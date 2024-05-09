@@ -9,6 +9,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+
+import java.time.Instant;
+import java.util.List;
+
+//import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -17,9 +22,10 @@ import reactor.core.publisher.Mono;
 @RequestMapping("/users")
 public class UserController {
     private final UserRepository userRepository;
-
-    public UserController(UserRepository userRepository) {
+    private final MovieRepository movieRepository;
+    public UserController(UserRepository userRepository, MovieRepository movieRepository) {
         this.userRepository = userRepository;
+        this.movieRepository = movieRepository;
     }
 
 
@@ -94,6 +100,17 @@ public class UserController {
     Flux<MovieEntity> watchLaterMoviesByUsername(@RequestParam String username) {
         return userRepository.findByUsername(username)
                 .flatMapMany(user -> Flux.fromIterable(user.getWatchLaterMovies()));
+    }
+
+    @PutMapping("/like-movies")
+    public Mono<UserEntity> likeMovies(@RequestParam String username, @RequestParam List<Integer> movieIds) {
+        return userRepository.likeMovies(username, movieIds);
+    }
+    
+    @CrossOrigin(origins = "http://localhost:3000")
+    @PutMapping("/dislike-movies")
+    public Mono<UserEntity> dislikeMovies(@RequestParam String username, @RequestParam List<Integer> movieIds) {
+        return userRepository.dislikeMovies(username, movieIds);
     }
 
 }
