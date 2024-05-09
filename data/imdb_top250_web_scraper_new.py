@@ -53,12 +53,12 @@ for i in range(250):
     num_votes.append(res[1])
 
 
-# Visiting each movie url to collect director, writer and actor details
+# Visiting each movie url to collect movie description, genres, director, actor details
 base_url = 'https://www.imdb.com'
 
 genres = []
 directors = []
-# writers = []
+plots = []
 actors = []
 
 for i in range(250):
@@ -72,32 +72,33 @@ for i in range(250):
 
     genre = parse.find('div', class_='ipc-chip-list--baseAlt ipc-chip-list')
     director = parse.find_all('li', class_='ipc-metadata-list__item')[0]
-    # writer = parse.find_all('li', class_='ipc-metadata-list__item')[1]
     star = parse.find_all('li', class_='ipc-metadata-list__item')[2]
 
+    plot = parse.find('p', attrs={'data-testid': 'plot'})
+    plot_text = plot.find('span', attrs={'data-testid': 'plot-xs_to_m'}).text
+    
     genres_list = []
     for item in genre.find_all('span', class_='ipc-chip__text'):
-        genres_list.append(item.text + ' ')
+        genres_list.append(item.text)
+    genres_list = '|'.join(genres_list)
 
     director_list = []
     for item in director.find_all('a', class_='ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link'):
-        director_list.append(item.text + ' ')
-
-    # writers_list = []
-    # for item in writer.find_all('a', class_='ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link'):
-    #     writers_list.append(item.text + ' ')
+        director_list.append(item.text)
+    director_list = '|'.join(director_list)
 
     stars_list = []
     for item in star.find_all('a', class_='ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link'):
-        stars_list.append(item.text + ' ')
+        stars_list.append(item.text)
+    stars_list = '|'.join(stars_list)
         
     genres.append(genres_list)
     directors.append(director_list)
-    # writers.append(writers_list)
+    plots.append(plot_text)
     actors.append(stars_list)
 
 data = {
-    'movie_name': movie_names,
+    'movie_title': movie_names,
     'released_year': year_of_release,
     'duration': time_span,
     'certificate_type': certi_type,
@@ -105,7 +106,8 @@ data = {
     'rating_count': num_votes,
     'directors': directors,
     'genres': genres,
-    'actors': actors
+    'actors': actors,
+    'plot': plots
 }
 
 movie_df = pd.DataFrame(data)
