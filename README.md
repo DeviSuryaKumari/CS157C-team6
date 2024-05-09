@@ -4,10 +4,10 @@ The graph data model (tentative - may be extended/modified as needed) for our mo
 
 Entities/Node Labels (comma-separated attributes):
 --------------------------------------------------
-1. Movie (title, released, genres) --> With uniqueness constraint on title property
+1. Movie (title, poster, released, genres, rating, plot) --> With uniqueness constraint on title property
 2. Actor (name) --> With uniqueness constraint on name property
 3. Director (name) --> With uniqueness constraint on name property
-4. User (username, email, password, name, dob, gender, isInitialLogin, profilePicture) --> With existence and uniqueness constraints on username property
+4. User (username, email, password, age, gender, isInitialLogin, profilePicture) --> With existence and uniqueness constraints on username property
 
 Schema Visualization:
 ---------------------
