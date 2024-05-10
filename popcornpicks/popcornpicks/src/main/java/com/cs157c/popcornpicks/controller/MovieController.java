@@ -1,19 +1,17 @@
 package com.cs157c.popcornpicks.controller;
 
-
-//import org.neo4j.driver.types.Entity;
 import com.cs157c.popcornpicks.model.DirectorEntity;
+import com.cs157c.popcornpicks.model.MovieEntity;
+
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-//import org.springframework.web.bind.annotation.PathVariable;
-
-import com.cs157c.popcornpicks.model.MovieEntity;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import com.cs157c.popcornpicks.repository.MovieRepository;
 
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -23,7 +21,6 @@ public class MovieController {
 	public MovieController(MovieRepository movieRepository) {
 		this.movieRepository = movieRepository;
 	}
-
 
 
     @CrossOrigin(origins = "http://localhost:3000")
@@ -47,8 +44,12 @@ public class MovieController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping("/genres")
-    public Flux<List<?>> getGenres() {
-        return movieRepository.getGenres();
+    public List<String> getGenres() {
+        Iterable<?> it = movieRepository.getGenres().toIterable();
+        String genres = it.iterator().next().toString();
+        genres = genres.substring(1, genres.length()-1);
+        genres = genres.replaceAll("\"", "");
+        return Arrays.asList(genres.split(", "));
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
