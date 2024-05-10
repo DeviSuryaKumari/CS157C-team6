@@ -26,9 +26,6 @@ public class UserEntity {
     @Relationship(type = "FOLLOWS", direction = Relationship.Direction.OUTGOING)
     private Set<UserEntity> followedUsers = new HashSet<>();
 
-    @Relationship(type = "FOLLOWED_BY", direction = Relationship.Direction.INCOMING)
-    private Set<UserEntity> followers = new HashSet<>();
-
     @Relationship(type = "WATCH_LATER", direction = Relationship.Direction.OUTGOING)
     private Set<MovieEntity> watchLaterMovies = new HashSet<>();
 
@@ -129,14 +126,6 @@ public class UserEntity {
 
     public void setFollowedUsers(Set<UserEntity> followedUsers) {
         this.followedUsers = followedUsers;
-    }
-
-    public Set<UserEntity> getFollowers() {
-        return followers;
-    }
-
-    public void setFollowers(Set<UserEntity> followers) {
-        this.followers = followers;
     }
 
     public Set<MovieEntity> getWatchLaterMovies() {

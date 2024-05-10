@@ -29,7 +29,6 @@ public class UserController {
     }
 
 
-
     @CrossOrigin(origins = "http://localhost:3000")
     @PutMapping("/create")
     Mono<ResponseEntity<String>> createUser(@RequestBody UserEntity newUser) {
@@ -45,8 +44,6 @@ public class UserController {
                                 .map(savedUser -> ResponseEntity.ok("User created successfully."))
                 );
     };
-
-
 
 
     @CrossOrigin(origins = "http://localhost:3000")
