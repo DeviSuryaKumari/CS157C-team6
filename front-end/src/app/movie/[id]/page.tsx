@@ -3,8 +3,8 @@
 import Link from 'next/link';
 import React, { useState, useEffect } from 'react';
 import { useParams } from "next/navigation";
-import Navbar from '@/app/components/Navbar';
-import CommentList from '@/app/components/CommentList';
+import Navbar from '../../components/Navbar';
+import CommentList from '../../components/CommentList';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -13,11 +13,11 @@ interface Movie {
     title: string;
     plot: string;
     genres: string[];
-    releasedYear: number;
+    released_year: number;
     rating: number;
     duration: string;
-    certificateType: string;
-    ratingCount: string;
+    certificate_type: string;
+    rating_count: string;
     poster: string;
 }
 
@@ -74,11 +74,11 @@ export default function Movie() {
         title: "",
         plot: "",
         genres: [],
-        releasedYear: 0,
+        released_year: 0,
         rating: 0,
         duration: "",
-        certificateType: "",
-        ratingCount: "",
+        certificate_type: "",
+        rating_count: "",
         poster: ""
     });
     const [isMovieDetailsRetrieved, setIsMovieDetailsRetrieved] = useState<boolean>(false);
@@ -119,7 +119,7 @@ export default function Movie() {
                     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="flex flex-col md:flex-row -mx-4">
                             <div className="md:flex-1 px-4">
-                                <div className="h-[460px] rounded-lg bg-gray-300 dark:bg-gray-700 mb-4">
+                                <div className="h-[460px] rounded-lg bg-gray-300 dark:bg-gray-700 mb-4 max-w-fit">
                                     <img className="w-full h-full object-contain" src={movie.poster} alt="Movie Image" />
                                 </div>
                                 <div className="flex -mx-2 mb-4">
@@ -142,7 +142,7 @@ export default function Movie() {
                                         <span className='text-gray-300 font-semibold'>Rating: <FontAwesomeIcon icon={faStar} size='sm' className='text-yellow-500 mr-1' />{movie.rating}</span>
                                     </div>
                                     <div>
-                                        <span className='text-gray-300 font-semibold'>{movie.ratingCount} Ratings</span>
+                                        <span className='text-gray-300 font-semibold'>{movie.rating_count} Ratings</span>
                                     </div>
                                     <div>
                                         <span className='text-gray-300 font-semibold'>Duration: {movie.duration}</span>
