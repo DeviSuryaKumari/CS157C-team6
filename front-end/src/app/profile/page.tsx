@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useEffect, use } from 'react'
-import Navbar from '@/app/components/Navbar'
+import React, { useState, useEffect} from 'react'
+import Navbar from '../components/Navbar';
 import FileUpload from '../components/FileUpload';
 import Cookies from 'js-cookie';
 import axios from 'axios';
