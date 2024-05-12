@@ -45,7 +45,7 @@ const LoginPage = () => {
       if(response.data.password === user.password) {
         setSuccessfulLogin(true);
       }
-      if (response.data.initialLogin == true) {
+      if (response.data.initialLogin == "Yes") {
         setIsInitialLogin(true);
       }
     }).catch((error) => {

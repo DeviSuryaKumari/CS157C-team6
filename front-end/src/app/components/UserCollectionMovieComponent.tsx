@@ -33,6 +33,9 @@ export default function UserCollectionMovieComponent({ movie }: UserCollectionMo
                             <FontAwesomeIcon icon={faCalendarAlt} size='lg' className='text-gray-400 mr-2' />
                             <span className='text-gray-400'>{movie.released_year}</span>
                         </div>
+                        <div>
+                            <span className='text-gray-400'>Rated: {movie.certificate_type}</span>
+                        </div>
                         <div className='mr-3'>
                             <FontAwesomeIcon icon={faClock} size='lg' className='text-gray-400 mr-2' />
                             <span className='text-gray-400'>{movie.duration}</span>
