@@ -69,7 +69,17 @@ export default function SelectionGame() {
     }
     const [movies, setMovies] = useState<Movie[]>([]);
     const [isMoviesRetrieved, setIsMoviesRetrieved] = useState<boolean>(false);
+    const [availableGenres, setAvailableGenres] = useState<string[]>([]);
 
+    const getAvailableGenres = async () => {
+        await axios.get('http://localhost:8080/movies/genres')
+            .then((response) => {
+                console.log(response.data);
+                setAvailableGenres(response.data);
+            }).catch((error) => {
+                console.log(error);
+            });
+    }
     const getMovies = async () => {
         await axios.get('http://localhost:8080/movies/top50')
             .then((response) => {
@@ -79,9 +89,16 @@ export default function SelectionGame() {
             });
     };
 
+
     useEffect(() => {
-        getMovies();
-    }, []);
+        const getDetails = async () => {
+            if(isUserDetailsRetrieved){
+                await getAvailableGenres();
+                await getMovies();
+            }
+        };
+        getDetails();
+    }, [isUserDetailsRetrieved]);
 
     useEffect(() => {
         if(movies.length > 1){
@@ -91,7 +108,7 @@ export default function SelectionGame() {
 
 
     return (
-        <>{!isUserDetailsRetrieved ? (
+        <>{!isUserDetailsRetrieved&& isMoviesRetrieved ? (
             <div className='w-screen h-screen'>
                 <div className="flex justify-center items-center">
                     <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-600 dark:border-gray-300"></div>
@@ -104,7 +121,7 @@ export default function SelectionGame() {
                     <div className='flex flex-col justify-center items-center my-12 md:my-24'>
                         <div className='w-11/12 md:w-3/4 h-auto md:h-screen px-5 py-5 rounded-lg'>
                             <ProgressBar />
-                            <GenreSelectionCard />
+                            <GenreSelectionCard  genres={availableGenres}/>
                             {
                                 movies.map((movie, index) => {
                                     return <UserCollectionMovieComponent movie={movie} key={index} />

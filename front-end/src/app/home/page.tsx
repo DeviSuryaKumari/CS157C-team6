@@ -1,32 +1,19 @@
 "use client";
 
-import React, { use, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
 import Carousel from '../components/Carousel';
-import { StaticImageData } from 'next/image';
 import MovieCard from '../components/MovieCard';
 import '@fortawesome/fontawesome-svg-core/styles.css'
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import Link from 'next/link';
-import { get } from 'http';
 
 export default function Home() {
     interface Item {
         img: string;
         desc: string;
     }
-    interface User {
-        email: string;
-        username: string;
-        password: string;
-        confirmPassword: string;
-        gender: string;
-        name: string;
-        profilePicture: string;
-        dateOfBirth: string;
-        initialLogin: boolean;
-    };
     const [isMoviesRetrieved, setIsMoviesRetrieved] = useState<boolean>(false);
     
 
@@ -36,9 +23,8 @@ export default function Home() {
         username: string;
         password: string;
         gender: string;
-        name: string;
         profilePicture: string;
-        dateOfBirth: string;
+        age: number;
         initialLogin: boolean;
     };
     interface Movie {
@@ -61,8 +47,7 @@ export default function Home() {
         password: "",
         initialLogin: false,
         gender: "",
-        name: "",
-        dateOfBirth: "",
+        age: 0,
         profilePicture: ""
     });
     const username = Cookies.get('username');

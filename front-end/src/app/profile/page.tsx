@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useState, useEffect} from 'react'
+import React, { useState, useEffect, use } from 'react'
 import Navbar from '../components/Navbar';
 import FileUpload from '../components/FileUpload';
 import Cookies from 'js-cookie';
 import axios from 'axios';
 import AWS from 'aws-sdk';
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
 
 export default function page() {
@@ -16,16 +17,14 @@ export default function page() {
     username: string;
     password: string;
     gender: string;
-    name: string;
     profilePicture: string;
-    dateOfBirth: string;
+    age: number;
     initialLogin: boolean;
   };
   interface UpdatedUserDetails {
-    name?: string;
     email?: string;
-    username?: string;
     profilePicture?: string;
+    password?: string;
   }
   const [userRetrievedDetails, setUserRetrievedDetails] = useState<UserRetrievedDetails>({
     email: "",
@@ -33,15 +32,13 @@ export default function page() {
     password: "",
     initialLogin: false,
     gender: "",
-    name: "",
-    dateOfBirth: "",
+    age: 0,
     profilePicture: ""
   });
 
   const [updatedUserDetails, setUpdatedUserDetails] = useState<UpdatedUserDetails>({
-    name: "",
     email: "",
-    username: "",
+    password: "",
     profilePicture: ""
   });
   const username = Cookies.get('username');
@@ -62,7 +59,6 @@ export default function page() {
   useEffect(() => {
     if (username !== undefined) {
       getUserDetails(username);
-
     }
   }, []);
 
@@ -115,46 +111,42 @@ export default function page() {
 
   const handleUserUpdate = async () => {
 
-    if (!updatedUserDetails.name && !updatedUserDetails.email && !updatedUserDetails.username && !selectedFile) {
+    if (!updatedUserDetails.email && !updatedUserDetails.password && !selectedFile) {
       alert('Please enter at least one field to update');
       return;
     }
 
-    await createUpdatedUserDetails();
+   
     try {
       if (selectedFile) { // If a new profile picture is selected, upload it to S3, then update the user details
         const profilePicURL = await handleUpload();
         if (profilePicURL) {
-          await axios.put('http://localhost:8080/users/update', { ...userRetrievedDetails, profilePicture: profilePicURL });
-          alert('User details updated successfully');
-        } else {
-          alert('Error updating user details');
+          await axios.put(`http://localhost:8080/users/update-profile-picture?username=${username}&profilePicture=${profilePicURL}`);
         }
-      } else {
-        await axios.put('http://localhost:8080/users/update', userRetrievedDetails); // If no new profile picture is selected, update the user details
-        alert('User details updated successfully');
       }
+      if(updatedUserDetails.email !== ""){
+        await axios.put(`http://localhost:8080/users/update-email?username=${username}&email=${updatedUserDetails.email}`);
+      }
+
+      if(updatedUserDetails.password !== ""){
+        await axios.put(`http://localhost:8080/users/update-password?username=${username}&password=${updatedUserDetails.password}`);
+      }
+      await getUserDetails(username);
+      alert('User details updated successfully');
     } catch (error) {
       console.error('Error updating user:', error);
     }
   }
 
-  const createUpdatedUserDetails = async () => {
-    setUserRetrievedDetails((prev) => {
-      const updatedDetails = { ...prev };
-
-      // Iterate through the keys of updatedUserDetails
-      for (const key in updatedUserDetails) {
-        // Check if the value is not null, undefined, or an empty string
-        if (updatedUserDetails[key as keyof UpdatedUserDetails]?.trim()) {
-          // Add the key-value pair to updatedDetails
-          updatedDetails[key as keyof UpdatedUserDetails] = updatedUserDetails[key as keyof UpdatedUserDetails]!;
-        }
-      }
-
-      return updatedDetails;
-    });
+  const [showPassword, setShowPassword] = useState(false);
+  const [password, setPassword] = useState<string>("");
+  const togglePasswordVisibility = () => {
+    setShowPassword((prevShowPassword) => !prevShowPassword);
   };
+  const handlePasswordInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value);
+    setUpdatedUserDetails((prev) => ({ ...prev, password: e.target.value }));
+  }
 
 
   useEffect(() => { // Update the profile picture URL in the user object when a new file is selected
@@ -164,6 +156,8 @@ export default function page() {
       setUpdatedUserDetails((prev) => ({ ...prev, profilePicture: profilePicURL }));
     }
   }, [selectedFile]);
+
+
 
 
 
@@ -189,25 +183,9 @@ export default function page() {
                   </div>
                 </div>
                 <div className="md:flex-1 px-4">
-                  <div>
-                    <span className="font-bold text-gray-700 dark:text-gray-300">Name</span>
-                    <div className="flex items-center justify-center mt-2 w-full">
-                      <div className="w-3/4">
-                        <span className="font-bold text-gray-700 dark:text-gray-300">Current Name - {userRetrievedDetails.name} </span>
-                        <div className='my-2'>
-                          <span className="font-bold text-gray-700 dark:text-gray-300">Update Name </span>
-                          <input
-                            className="w-full px-8 py-3 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white mt-2 text-black"
-                            type="text"
-                            name="name"
-                            placeholder={"Update Name:"}
-                            onChange={handleUserInput}
-                          />
-                        </div>
-                      </div>
-                    </div>
+                  <div className="mb-6">
+                    <span className="font-bold text-gray-700 dark:text-gray-300">Username - {userRetrievedDetails.username}</span>
                   </div>
-
 
                   <div className="mb-6">
                     <span className="font-bold text-gray-700 dark:text-gray-300">Email</span>
@@ -227,51 +205,41 @@ export default function page() {
                       </div>
                     </div>
                   </div>
-                  <div className="mb-6">
-                    <span className="font-bold text-gray-700 dark:text-gray-300">Username</span>
-                    <div className="flex items-center justify-center mt-2 w-full">
-                      <div className="w-3/4">
-                        <span className="font-bold text-gray-700 dark:text-gray-300">Current Username - {userRetrievedDetails.username} </span>
-                        <div className='my-2'>
-                          <span className="font-bold text-gray-700 dark:text-gray-300">Update Username </span>
-                          <input
-                            className="w-full px-8 py-3 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white mt-2 text-black"
-                            type="text"
-                            name="username"
-                            placeholder={"Update Username:"}
-                            onChange={handleUserInput}
-                          />
-                        </div>
 
-                      </div>
-                    </div>
-                  </div>
                   <div className="mb-6">
                     <span className="font-bold text-gray-700 dark:text-gray-300">Password</span>
                     <div className="flex items-center justify-center mt-2 w-full">
                       <div className="w-3/4">
-                        <span className="font-bold text-gray-700 dark:text-gray-300">Current Email - {userRetrievedDetails.email} </span>
-                        <div className='my-2'>
-                          <span className="font-bold text-gray-700 dark:text-gray-300">Update Email </span>
+                        <span className="font-bold text-gray-300">
+                          Current Password - {showPassword ? userRetrievedDetails.password : '*'.repeat(userRetrievedDetails.password.length)}
+                          <FontAwesomeIcon
+                            icon={showPassword ? faEyeSlash : faEye}
+                            className='ms-3 cursor-pointer'
+                            onClick={togglePasswordVisibility}
+                          />
+                        </span>
+                        <div className='my-2 relative'>
+                          <span className="font-bold text-gray-300">Update Password </span>
                           <input
-                            className="w-full px-8 py-3 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white mt-2 text-black"
-                            type="email"
-                            name="email"
-                            placeholder={"Update Email:"}
-                            onChange={handleUserInput}
+                            className="w-full mt-2 px-8 py-3 rounded-lg font-medium bg-gray-100 border placeholder-gray-500 border-gray-200 text-sm  focus:border-gray-400 text-black "
+                            type={showPassword ? 'text' : 'password'}
+                            name="password"
+                            placeholder="Update Password:"
+                            onChange={handlePasswordInput}
+                            value={password}
                           />
                         </div>
                       </div>
                     </div>
                   </div>
                   <div className="mb-6">
-                    <span className="font-bold text-gray-700 dark:text-gray-300">Birthdate -  {userRetrievedDetails.dateOfBirth}</span>
+                    <span className="font-bold text-gray-300">Age -  {userRetrievedDetails.age}</span>
                   </div>
                   <div className="mb-6">
-                    <span className="font-bold text-gray-700 dark:text-gray-300">Gender - {userRetrievedDetails.gender.replace(userRetrievedDetails.gender.charAt(0), userRetrievedDetails.gender.charAt(0).toUpperCase())}</span>
+                    <span className="font-bold text-gray-300">Gender - {userRetrievedDetails.gender.replace(userRetrievedDetails.gender.charAt(0), userRetrievedDetails.gender.charAt(0).toUpperCase())}</span>
                   </div>
                   <div className="mb-6">
-                    <span className="font-bold text-gray-700 dark:text-gray-300">Edit Profile Picture</span>
+                    <span className="font-bold text-gray-300">Edit Profile Picture</span>
                     <div className='mt-3'>
                       <FileUpload onFileUpload={handleFileChange} />
                     </div>
@@ -281,7 +249,7 @@ export default function page() {
             </div>
           )}
         </div>
-      </div>
+      </div >
     </>
   )
 }
