@@ -1,7 +1,9 @@
-import React from 'react'
+"use client";
+import React, { useState } from 'react'
 import '@fortawesome/fontawesome-svg-core/styles.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faThumbsUp, faThumbsDown, faCalendarAlt, faClock } from '@fortawesome/free-regular-svg-icons';
+import { faFilm } from '@fortawesome/free-solid-svg-icons';
 
 interface Movie {
     title: string;
@@ -16,8 +18,24 @@ interface Movie {
 }
 interface UserCollectionMovieProps {
     movie: Movie;
+    handleLike: (movie: Movie) => void;
+    handleDislike: (movie: Movie) => void;
 }
-export default function UserCollectionMovieComponent({ movie }: UserCollectionMovieProps) {
+export default function UserCollectionMovieComponent({ movie, handleDislike, handleLike }: UserCollectionMovieProps) {
+    const [liked, setLiked] = useState(false);
+    const [disliked, setDisliked] = useState(false);
+
+    const handleClickLike = () => {
+        setLiked(true);
+        setDisliked(false);
+        handleLike(movie);
+    };
+    const handleClickDislike = () => {
+        setLiked(false);
+        setDisliked(true);
+        handleDislike(movie);
+    };
+
     return (
         <>
             <div className='min-w-full flex flex-col items-center md:flex-row justify-between my-5 border border-gray-500 rounded-lg py-5'>
@@ -28,12 +46,12 @@ export default function UserCollectionMovieComponent({ movie }: UserCollectionMo
                         <p className='text-gray-300'>{movie.plot}</p>
                     </div>
                     <div className='flex justify-between items-center w-full mt-3'>
-                        <div>
+                        <div className='px-3'>
                             <FontAwesomeIcon icon={faCalendarAlt} size='lg' className='text-gray-400 mr-2' />
                             <span className='text-gray-400'>{movie.released_year}</span>
                         </div>
-                        <div className='mr-3'>
-                            <FontAwesomeIcon icon={faClock} size='lg' className='text-gray-400 mr-2' />
+                        <div className='px-3'>
+                            <FontAwesomeIcon icon={faFilm} size='lg' className='text-gray-400 mr-2' />
                             <span className='text-gray-400'>
                                 {
                                     movie.genres.map((genre, index) => (
@@ -42,18 +60,27 @@ export default function UserCollectionMovieComponent({ movie }: UserCollectionMo
                                 }
                             </span>
                         </div>
-                        <div>
+                        <div className='px-3'>
                             <span className='text-gray-400'>Rated: {movie.certificate_type}</span>
                         </div>
-                        <div className='mr-3'>
+                        <div className='px-3'>
                             <FontAwesomeIcon icon={faClock} size='lg' className='text-gray-400 mr-2' />
                             <span className='text-gray-400'>{movie.duration}</span>
                         </div>
                     </div>
-                    <div className='flex justify-evenly items-center mt-3'>
-                        <FontAwesomeIcon icon={faThumbsUp} size='2x' className='text-green-500 border rounded-lg px-3 py-3 hover:bg-slate-600 mx-3 hover:cursor-pointer' />
-                        <FontAwesomeIcon icon={faThumbsDown} size='2x' className='text-red-500 border rounded-lg px-3 py-3 hover:bg-slate-600 mx-3 hover:cursor-pointer' />
-
+                    <div className="flex justify-evenly items-center mt-3">
+                        <FontAwesomeIcon
+                            icon={faThumbsUp}
+                            size="2x"
+                            onClick={handleClickLike}
+                            className={`border text-green-500 rounded-lg px-3 py-3 hover:bg-slate-600 mx-3 hover:cursor-pointer ${liked ? 'bg-green-300' : ''}`}
+                        />
+                        <FontAwesomeIcon
+                            icon={faThumbsDown}
+                            size="2x"
+                            onClick={handleClickDislike}
+                            className={`border text-red-500 rounded-lg px-3 py-3 hover:bg-slate-600 mx-3 hover:cursor-pointer ${disliked ? 'bg-red-300' : ''}`}
+                        />
                     </div>
                 </div>
             </div>
