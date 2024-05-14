@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, use } from 'react'
 import Navbar from '../components/Navbar';
 import '@fortawesome/fontawesome-svg-core/styles.css'
 import ProgressBar from '../components/ProgressBar';
@@ -70,11 +70,25 @@ export default function SelectionGame() {
     const [movies, setMovies] = useState<Movie[]>([]);
     const [isMoviesRetrieved, setIsMoviesRetrieved] = useState<boolean>(false);
     const [availableGenres, setAvailableGenres] = useState<string[]>([]);
+    const [isGenresSelected, setIsGenresSelected] = useState<boolean>(false);
+    const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
+    const [moviesByGenres, setMoviesByGenres] = useState<Movie[]>([]);
+    const [isMoviesByGenresRetrieved, setIsMoviesByGenresRetrieved] = useState<boolean>(false);
+
+    const handleSelectedGenres = (selectedGenres: string[]) => {
+        if (selectedGenres.length === 5) {
+            setIsGenresSelected(true);
+        }
+    }
+    const handleGenreSelect = (genre: string) => {
+        if (selectedGenres.length < 5) {
+            setSelectedGenres((prevSelectedGenres) => [...prevSelectedGenres, genre]);
+        }
+    }
 
     const getAvailableGenres = async () => {
         await axios.get('http://localhost:8080/movies/genres')
             .then((response) => {
-                console.log(response.data);
                 setAvailableGenres(response.data);
             }).catch((error) => {
                 console.log(error);
@@ -92,7 +106,7 @@ export default function SelectionGame() {
 
     useEffect(() => {
         const getDetails = async () => {
-            if(isUserDetailsRetrieved){
+            if (isUserDetailsRetrieved) {
                 await getAvailableGenres();
                 await getMovies();
             }
@@ -100,15 +114,39 @@ export default function SelectionGame() {
         getDetails();
     }, [isUserDetailsRetrieved]);
 
+
     useEffect(() => {
-        if(movies.length > 1){
+        if (movies.length > 1) {
             setIsMoviesRetrieved(true);
         }
     }, [movies]);
 
 
+    useEffect(() => {
+        const getMoviesByGenres = async () => {
+            if (isGenresSelected && selectedGenres.length === 5) {
+                console.log(selectedGenres);
+                const genresParam = selectedGenres.join(',');
+                await axios.get('http://localhost:8080/movies/movies-by-genres', {
+                    params: {
+                        genres: genresParam
+                    }
+                }).then((response) => {
+                    setMoviesByGenres(response.data);
+                    setIsMoviesByGenresRetrieved(true);
+                }).catch((error) => {
+                    console.log(error);
+                });
+            }
+        };
+
+
+        getMoviesByGenres();
+    }, [isGenresSelected]);
+
+
     return (
-        <>{!isUserDetailsRetrieved&& isMoviesRetrieved ? (
+        <>{!isUserDetailsRetrieved && isMoviesRetrieved ? (
             <div className='w-screen h-screen'>
                 <div className="flex justify-center items-center">
                     <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-600 dark:border-gray-300"></div>
@@ -121,11 +159,17 @@ export default function SelectionGame() {
                     <div className='flex flex-col justify-center items-center my-12 md:my-24'>
                         <div className='w-11/12 md:w-3/4 h-auto md:h-screen px-5 py-5 rounded-lg'>
                             <ProgressBar />
-                            <GenreSelectionCard  genres={availableGenres}/>
-                            {
-                                movies.map((movie, index) => {
-                                    return <UserCollectionMovieComponent movie={movie} key={index} />
-                                })
+                            <GenreSelectionCard
+                                genres={availableGenres}
+                                handleSelectedGenres={handleSelectedGenres}
+                                parentHandleGenreSelect={handleGenreSelect} />
+                            {isMoviesByGenresRetrieved && (
+                                <div className='flex flex-col items-center justify-center'>
+                                    {moviesByGenres.map((movie) => (
+                                        <UserCollectionMovieComponent movie={movie} />
+                                    ))}
+                                </div>
+                            )
                             }
                         </div>
 
