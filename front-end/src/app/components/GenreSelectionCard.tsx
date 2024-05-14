@@ -3,16 +3,18 @@ import GenreBadge from './GenreBadge';
 
 interface GenreSelectionCardProps {
     genres: string[];
-
+    handleSelectedGenres: (selectedGenres:string[]) => void;
+    parentHandleGenreSelect: (genre: string) => void;
 }
 
-export default function GenreSelectionCard({ genres }: GenreSelectionCardProps) {
+export default function GenreSelectionCard({ genres, handleSelectedGenres, parentHandleGenreSelect }: GenreSelectionCardProps) {
     const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
     const [showCard, setShowCard] = useState(true);
 
     const handleGenreSelect = (genre: string) => {
         if (selectedGenres.length < 5) {
             setSelectedGenres((prevSelectedGenres) => [...prevSelectedGenres, genre]);
+            parentHandleGenreSelect(genre);
         }
     };
 
@@ -23,7 +25,7 @@ export default function GenreSelectionCard({ genres }: GenreSelectionCardProps) 
     useEffect(() => {
         if(selectedGenres.length === 5) {
             setShowCard(false);
-            console.log(selectedGenres);
+            handleSelectedGenres(selectedGenres);
         }
     }, [selectedGenres]);
 

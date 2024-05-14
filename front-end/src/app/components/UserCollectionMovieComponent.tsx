@@ -1,5 +1,4 @@
 import React from 'react'
-import Navbar from './Navbar';
 import '@fortawesome/fontawesome-svg-core/styles.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faThumbsUp, faThumbsDown, faCalendarAlt, faClock } from '@fortawesome/free-regular-svg-icons';
@@ -21,7 +20,7 @@ interface UserCollectionMovieProps {
 export default function UserCollectionMovieComponent({ movie }: UserCollectionMovieProps) {
     return (
         <>
-            <div className='flex flex-col items-center md:flex-row justify-between my-5 border border-gray-500 rounded-lg py-5'>
+            <div className='min-w-full flex flex-col items-center md:flex-row justify-between my-5 border border-gray-500 rounded-lg py-5'>
                 <img src={movie.poster} alt={`${movie.title} poster`} className='w-1/3 md:w-1/4 mb-3 md:mb-0 mx-3' />
                 <div className='flex flex-col justify-between items-start ml-3'>
                     <div>
@@ -32,6 +31,16 @@ export default function UserCollectionMovieComponent({ movie }: UserCollectionMo
                         <div>
                             <FontAwesomeIcon icon={faCalendarAlt} size='lg' className='text-gray-400 mr-2' />
                             <span className='text-gray-400'>{movie.released_year}</span>
+                        </div>
+                        <div className='mr-3'>
+                            <FontAwesomeIcon icon={faClock} size='lg' className='text-gray-400 mr-2' />
+                            <span className='text-gray-400'>
+                                {
+                                    movie.genres.map((genre, index) => (
+                                        <span key={index}>{genre}{index < movie.genres.length - 1 ? ', ' : ''}</span>
+                                    ))
+                                }
+                            </span>
                         </div>
                         <div>
                             <span className='text-gray-400'>Rated: {movie.certificate_type}</span>

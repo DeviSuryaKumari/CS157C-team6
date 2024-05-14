@@ -110,4 +110,28 @@ public class UserController {
         return userRepository.dislikeMovies(username, movieIds);
     }
 
+    @CrossOrigin(origins = "http://localhost:3000")
+    @PutMapping("/update-initial-login")
+    public Mono<UserEntity> updateInitialLogin(@RequestParam String username) {
+        return userRepository.updateInitialLogin(username);
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @PutMapping("/update-profile-picture")
+    public Mono<UserEntity> updateProfilePicture(@RequestParam String username, @RequestParam String profilePicture) {
+        return userRepository.updateProfilePicture(username, profilePicture);
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @PutMapping("/update-password")
+    public Mono<UserEntity> updatePassword(@RequestParam String username, @RequestParam String password) {
+        return userRepository.updatePassword(username, password);
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @PutMapping("/update-email")
+    public Mono<UserEntity> updateEmail(@RequestParam String username, @RequestParam String email) {
+        return userRepository.updateEmail(username, email);
+    }
+
 }

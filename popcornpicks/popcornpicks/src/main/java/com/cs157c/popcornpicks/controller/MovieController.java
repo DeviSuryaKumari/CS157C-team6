@@ -11,8 +11,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import com.cs157c.popcornpicks.repository.MovieRepository;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 @RestController
 @RequestMapping("/movies")
@@ -52,16 +51,23 @@ public class MovieController {
         return Arrays.asList(genres.split(", "));
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
-    @GetMapping("/director/{title}")
-    public Flux<DirectorEntity> getDirectorByMovieTitle(@PathVariable String title) {
-        return movieRepository.getDirectorByMovieTitle(title);
-    }
 
     @CrossOrigin(origins = "http://localhost:3000")
-    @GetMapping("/actors/{title}")
-    public Flux<DirectorEntity> getActorsByMovieTitle(@PathVariable String title) {
-        return movieRepository.getActorsByMovieTitle(title);
+    @GetMapping("/movies-by-genres")
+    public List<MovieEntity> getMoviesByGenres(@RequestParam List<String> genres) {
+        if (genres == null || genres.isEmpty()) {
+            throw new IllegalArgumentException("Genres list is empty or null");
+        }
+
+        List<MovieEntity> moviesByGenres = new ArrayList<>();
+        for (String genre : genres) {
+            Flux<MovieEntity> movies = movieRepository.getMoviesByGenre(genre);
+            moviesByGenres.addAll(Objects.requireNonNull(movies.collectList().block()));
+        }
+        return moviesByGenres;
     }
+
+
+
 
 }
