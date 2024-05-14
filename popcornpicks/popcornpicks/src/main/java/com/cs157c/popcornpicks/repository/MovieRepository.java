@@ -6,16 +6,15 @@ import org.springframework.data.neo4j.repository.query.Query;
 
 import com.cs157c.popcornpicks.model.MovieEntity;
 
-
-import org.springframework.data.neo4j.repository.query.Query;
-
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
-import java.util.Objects;
 
 public interface MovieRepository extends ReactiveNeo4jRepository<MovieEntity, String> {
+
+	@Query("MATCH (m:Movie) RETURN m")
+    Flux<MovieEntity> findAll();
 
 	@Query("MATCH (m:Movie) RETURN m ORDER BY m.rating DESC LIMIT 50")
 	Flux<MovieEntity> getTop50Movies();

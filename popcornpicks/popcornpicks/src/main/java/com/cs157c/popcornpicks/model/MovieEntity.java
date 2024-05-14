@@ -19,8 +19,11 @@ public class MovieEntity {
 	@Relationship(type = "DIRECTED", direction = Relationship.Direction.INCOMING)
 	private final List<DirectorEntity> directors;
 
+	//@Relationship(type = "ACTED_IN", direction = Relationship.Direction.INCOMING)
+	//private final List<ActorEntity> actors;
+
 	private final List<String> genres;
-	//private final List<String> actors;
+	
 	private final String plot;
 	private final String poster;
 

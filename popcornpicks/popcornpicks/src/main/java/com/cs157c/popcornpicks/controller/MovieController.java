@@ -1,6 +1,6 @@
 package com.cs157c.popcornpicks.controller;
 
-import com.cs157c.popcornpicks.model.DirectorEntity;
+//import com.cs157c.popcornpicks.model.DirectorEntity;
 import com.cs157c.popcornpicks.model.MovieEntity;
 
 import org.springframework.web.bind.annotation.*;
