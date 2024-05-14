@@ -13,11 +13,11 @@ public interface UserRepository extends ReactiveNeo4jRepository<UserEntity, Stri
     Mono<UserEntity> findByUsername(String username);
     Flux<UserEntity> findUsersFollowersByUsername(String username);
 
-    @Query("MATCH (u:User {username: $username}), (m:Movie) WHERE ID(m) IN $movieIds MERGE (u)-[:LIKED]->(m)")
-    Mono<UserEntity> likeMovies(String username, List<Integer> movieIds);
+    @Query("MATCH (u:User {username: $username}), (m:Movie) WHERE m.title IN $movieTitles MERGE (u)-[:LIKED]->(m)")
+    Mono<UserEntity> likeMovies(String username, List<String> movieTitles);
 
-    @Query("MATCH (u:User {username: $username}), (m:Movie) WHERE ID(m) IN $movieIds MERGE (u)-[:DISLIKED]->(m)")
-    Mono<UserEntity> dislikeMovies(String username, List<Integer> movieIds);
+    @Query("MATCH (u:User {username: $username}), (m:Movie) WHERE m.title IN $movieTitles MERGE (u)-[:DISLIKED]->(m)")
+    Mono<UserEntity> dislikeMovies(String username, List<String> movieTitles);
 
     @Query("MATCH (u:User {username: $username}) SET u.isInitialLogin = 'No' RETURN u")
     Mono<UserEntity> updateInitialLogin(String username);

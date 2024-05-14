@@ -91,14 +91,14 @@ public class UserController {
     }
 
     @PutMapping("/like-movies")
-    public Mono<UserEntity> likeMovies(@RequestParam String username, @RequestParam List<Integer> movieIds) {
-        return userRepository.likeMovies(username, movieIds);
+    public Mono<UserEntity> likeMovies(@RequestParam String username, @RequestParam List<String> movieTitles) {
+        return userRepository.likeMovies(username, movieTitles);
     }
     
     @CrossOrigin(origins = "http://localhost:3000")
     @PutMapping("/dislike-movies")
-    public Mono<UserEntity> dislikeMovies(@RequestParam String username, @RequestParam List<Integer> movieIds) {
-        return userRepository.dislikeMovies(username, movieIds);
+    public Mono<UserEntity> dislikeMovies(@RequestParam String username, @RequestParam List<String> movieTitles) {
+        return userRepository.dislikeMovies(username, movieTitles);
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
