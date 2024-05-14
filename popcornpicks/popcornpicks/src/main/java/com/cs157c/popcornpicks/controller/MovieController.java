@@ -1,6 +1,6 @@
 package com.cs157c.popcornpicks.controller;
 
-import com.cs157c.popcornpicks.model.DirectorEntity;
+//import com.cs157c.popcornpicks.model.DirectorEntity;
 import com.cs157c.popcornpicks.model.MovieEntity;
 
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +21,6 @@ public class MovieController {
 	public MovieController(MovieRepository movieRepository) {
 		this.movieRepository = movieRepository;
 	}
-
 
     @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping("/all")

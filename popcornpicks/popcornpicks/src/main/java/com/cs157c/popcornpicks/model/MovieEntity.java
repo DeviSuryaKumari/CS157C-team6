@@ -1,13 +1,9 @@
 package com.cs157c.popcornpicks.model;
 
 import java.util.List;
-
-//import org.neo4j.ogm.annotation.GraphId;
-//import org.neo4j.ogm.annotation.NodeEntity;
-//import org.neo4j.ogm.annotation.Property;
-//import org.neo4j.ogm.annotation.Relationship;
 import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
+import org.springframework.data.neo4j.core.schema.Relationship;
 
 @Node("Movie")
 public class MovieEntity {
@@ -19,15 +15,20 @@ public class MovieEntity {
 	private final String certificate_type;
 	private final double rating;
 	private final String rating_count;
-	//private final List<String> directors;
+	
+	@Relationship(type = "DIRECTED", direction = Relationship.Direction.INCOMING)
+	private final List<DirectorEntity> directors;
+
+	//@Relationship(type = "ACTED_IN", direction = Relationship.Direction.INCOMING)
+	//private final List<ActorEntity> actors;
 
 	private final List<String> genres;
-	//private final List<String> actors;
+	
 	private final String plot;
 	private final String poster;
 
 
-	public MovieEntity(String title, int released_year, String duration, String certificate_type, double rating, String rating_count, List<String> genres, String plot, String poster) {
+	public MovieEntity(String title, int released_year, String duration, String certificate_type, double rating, String rating_count, List<String> genres, String plot, String poster, List<DirectorEntity> directors) {
 		this.title = title;
 		this.released_year = released_year;
 		this.duration = duration;
@@ -37,6 +38,7 @@ public class MovieEntity {
 		this.genres = genres;
 		this.plot = plot;
 		this.poster = poster;
+		this.directors = directors;
 	}
 
 	public String getTitle() {

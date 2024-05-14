@@ -1,13 +1,7 @@
 package com.cs157c.popcornpicks.repository;
 
-import com.cs157c.popcornpicks.model.MovieEntity;
 import com.cs157c.popcornpicks.model.UserEntity;
-import org.springframework.data.neo4j.core.schema.Relationship;
-
-
 import java.util.List;
-
-
 import org.springframework.data.neo4j.repository.ReactiveNeo4jRepository;
 import org.springframework.data.neo4j.repository.query.Query;
 

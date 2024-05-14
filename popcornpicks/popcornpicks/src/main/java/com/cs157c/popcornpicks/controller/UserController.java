@@ -2,18 +2,10 @@ package com.cs157c.popcornpicks.controller;
 
 import com.cs157c.popcornpicks.model.MovieEntity;
 import com.cs157c.popcornpicks.model.UserEntity;
-import com.cs157c.popcornpicks.repository.MovieRepository;
 import com.cs157c.popcornpicks.repository.UserRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-
-import java.time.Instant;
 import java.util.List;
-
-//import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -22,10 +14,9 @@ import reactor.core.publisher.Mono;
 @RequestMapping("/users")
 public class UserController {
     private final UserRepository userRepository;
-    private final MovieRepository movieRepository;
-    public UserController(UserRepository userRepository, MovieRepository movieRepository) {
+
+    public UserController(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.movieRepository = movieRepository;
     }
 
 
