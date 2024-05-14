@@ -74,6 +74,47 @@ export default function SelectionGame() {
     const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
     const [moviesByGenres, setMoviesByGenres] = useState<Movie[]>([]);
     const [isMoviesByGenresRetrieved, setIsMoviesByGenresRetrieved] = useState<boolean>(false);
+    const [likedMovies, setLikedMovies] = useState<Movie[]>([]);
+    const [dislikedMovies, setDislikedMovies] = useState<Movie[]>([]);
+    const [progressPercentage, setProgressPercentage] = useState<number>(0);
+
+    const handleLikedMovie = (movie: Movie) => {
+        // Check if the movie is already in the liked list
+        const isAlreadyLiked = likedMovies.some((likedMovie) => likedMovie.title === movie.title);
+
+        if (isAlreadyLiked) {
+            // If the movie is already liked, remove it from the liked list
+            setLikedMovies((prevLikedMovies) => prevLikedMovies.filter((likedMovie) => likedMovie.title !== movie.title));
+        } else {
+            // If the movie is not liked, add it to the liked list and remove from the disliked list if present
+            setLikedMovies((prevLikedMovies) => [...prevLikedMovies, movie]);
+
+            // Remove the movie from the disliked list if present
+            setDislikedMovies((prevDislikedMovies) => prevDislikedMovies.filter((dislikedMovie) => dislikedMovie.title !== movie.title));
+        }
+    };
+
+    const handleDislikedMovie = (movie: Movie) => {
+        // Check if the movie is already in the disliked list
+        const isAlreadyDisliked = dislikedMovies.some((dislikedMovie) => dislikedMovie.title === movie.title);
+
+        if (isAlreadyDisliked) {
+            // If the movie is already disliked, remove it from the disliked list
+            setDislikedMovies((prevDislikedMovies) =>
+                prevDislikedMovies.filter((dislikedMovie) => dislikedMovie.title !== movie.title)
+            );
+        } else {
+            // If the movie is not disliked, add it to the disliked list and remove from the liked list if present
+            setDislikedMovies((prevDislikedMovies) => [...prevDislikedMovies, movie]);
+
+            // Remove the movie from the liked list if present
+            setLikedMovies((prevLikedMovies) => prevLikedMovies.filter((likedMovie) => likedMovie.title !== movie.title));
+        }
+    };
+
+
+
+
 
     const handleSelectedGenres = (selectedGenres: string[]) => {
         if (selectedGenres.length === 5) {
@@ -132,7 +173,23 @@ export default function SelectionGame() {
                         genres: genresParam
                     }
                 }).then((response) => {
-                    setMoviesByGenres(response.data);
+                    const moviesResponse = response.data;
+        
+                    // Create a set to store unique movies based on their IDs
+                    const uniqueMoviesSet = []
+        
+                    // Iterate through the movies from the response and add them to the set
+                    moviesResponse.forEach((movie: Movie) => {
+                        if (!uniqueMoviesSet.some((uniqueMovie) => uniqueMovie.title === movie.title)) {
+                            uniqueMoviesSet.push(movie);
+                        }
+                    });
+        
+                    // Convert the set back to an array of unique movies
+                    const uniqueMoviesArray = Array.from(uniqueMoviesSet);
+        
+                    // Update the state with the array of unique movies
+                    setMoviesByGenres(uniqueMoviesArray);
                     setIsMoviesByGenresRetrieved(true);
                 }).catch((error) => {
                     console.log(error);
@@ -141,8 +198,20 @@ export default function SelectionGame() {
         };
 
 
+
         getMoviesByGenres();
     }, [isGenresSelected]);
+
+    const totalMovies = isGenresSelected ? moviesByGenres.length : 0;
+    useEffect(() => {
+        if (totalMovies > 0) {
+            console.log(totalMovies);
+            const totalSelections = likedMovies.length + dislikedMovies.length;
+            console.log(totalSelections);
+            setProgressPercentage(totalSelections > 0 ? (totalSelections / totalMovies) * 100 : 0);
+        }
+
+    }, [likedMovies, dislikedMovies]);
 
 
     return (
@@ -158,15 +227,18 @@ export default function SelectionGame() {
                     <Navbar profilePicture={userRetrievedDetails.profilePicture} />
                     <div className='flex flex-col justify-center items-center my-12 md:my-24'>
                         <div className='w-11/12 md:w-3/4 h-auto md:h-screen px-5 py-5 rounded-lg'>
-                            <ProgressBar />
+                            <div className='fixed w-3/4 top-20'>
+                                <ProgressBar progressPercentage={progressPercentage} />
+                            </div>
+
                             <GenreSelectionCard
                                 genres={availableGenres}
                                 handleSelectedGenres={handleSelectedGenres}
                                 parentHandleGenreSelect={handleGenreSelect} />
                             {isMoviesByGenresRetrieved && (
-                                <div className='flex flex-col items-center justify-center'>
+                                <div className='flex flex-col items-center justify-center mx-2'>
                                     {moviesByGenres.map((movie) => (
-                                        <UserCollectionMovieComponent movie={movie} />
+                                        <UserCollectionMovieComponent movie={movie} handleLike={handleLikedMovie} handleDislike={handleDislikedMovie} />
                                     ))}
                                 </div>
                             )

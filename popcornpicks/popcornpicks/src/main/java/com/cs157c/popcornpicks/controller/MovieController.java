@@ -12,6 +12,7 @@ import reactor.core.publisher.Mono;
 import com.cs157c.popcornpicks.repository.MovieRepository;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/movies")
@@ -59,13 +60,21 @@ public class MovieController {
             throw new IllegalArgumentException("Genres list is empty or null");
         }
 
-        List<MovieEntity> moviesByGenres = new ArrayList<>();
+        Set<MovieEntity> distinctMovies = new HashSet<>(); // Use a set to store distinct movies
+
         for (String genre : genres) {
-            Flux<MovieEntity> movies = movieRepository.getMoviesByGenre(genre);
-            moviesByGenres.addAll(Objects.requireNonNull(movies.collectList().block()));
+            Flux<MovieEntity> movies = movieRepository.getDistinctMoviesByGenre(genre); // Use the updated query method
+            List<MovieEntity> movieList = Objects.requireNonNull(movies.collectList().block());
+
+            // Add distinct movies from the current genre to the set
+            distinctMovies.addAll(movieList);
         }
-        return moviesByGenres;
+
+        // If there are more than 25 distinct movies, take the first 25
+
+        return distinctMovies.stream().limit(25).collect(Collectors.toList());
     }
+
 
 
 
