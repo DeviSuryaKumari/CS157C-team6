@@ -2,6 +2,9 @@
 
 # dependencies
 /node_modules
+/front-end/node_modules/
+/front-end/package-lock.json
+
 /.pnp
 .pnp.js
 .yarn/install-state.gz

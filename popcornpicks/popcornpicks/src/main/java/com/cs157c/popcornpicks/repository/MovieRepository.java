@@ -28,6 +28,10 @@ public interface MovieRepository extends ReactiveNeo4jRepository<MovieEntity, St
 
 	@Query("MATCH (m:Movie) UNWIND m.genres AS genres WITH DISTINCT genres RETURN COLLECT(genres)")
 	Flux<List<?>> getGenres();
+
+	@Query("MATCH (m:Movie) WHERE $genre IN m.genres RETURN DISTINCT m LIMIT 5")
+	Flux<MovieEntity> getDistinctMoviesByGenre(String genre);
+
 	Mono<MovieEntity> findByTitle(String title);
 
 	Mono<Void> deleteByTitle(String title);

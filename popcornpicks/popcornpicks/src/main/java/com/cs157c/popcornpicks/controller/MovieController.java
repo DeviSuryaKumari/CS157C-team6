@@ -1,20 +1,18 @@
 package com.cs157c.popcornpicks.controller;
 
-
-//import org.neo4j.driver.types.Entity;
 import com.cs157c.popcornpicks.model.DirectorEntity;
+import com.cs157c.popcornpicks.model.MovieEntity;
+
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-//import org.springframework.web.bind.annotation.PathVariable;
-
-import com.cs157c.popcornpicks.model.MovieEntity;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import com.cs157c.popcornpicks.repository.MovieRepository;
 
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/movies")
@@ -45,20 +43,39 @@ public class MovieController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping("/genres")
-    public Flux<List<?>> getGenres() {
-        return movieRepository.getGenres();
+    public List<String> getGenres() {
+        Iterable<?> it = movieRepository.getGenres().toIterable();
+        String genres = it.iterator().next().toString();
+        genres = genres.substring(1, genres.length()-1);
+        genres = genres.replaceAll("\"", "");
+        return Arrays.asList(genres.split(", "));
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
-    @GetMapping("/director/{title}")
-    public Flux<DirectorEntity> getDirectorByMovieTitle(@PathVariable String title) {
-        return movieRepository.getDirectorByMovieTitle(title);
-    }
 
     @CrossOrigin(origins = "http://localhost:3000")
-    @GetMapping("/actors/{title}")
-    public Flux<DirectorEntity> getActorsByMovieTitle(@PathVariable String title) {
-        return movieRepository.getActorsByMovieTitle(title);
+    @GetMapping("/movies-by-genres")
+    public List<MovieEntity> getMoviesByGenres(@RequestParam List<String> genres) {
+        if (genres == null || genres.isEmpty()) {
+            throw new IllegalArgumentException("Genres list is empty or null");
+        }
+
+        Set<MovieEntity> distinctMovies = new HashSet<>(); // Use a set to store distinct movies
+
+        for (String genre : genres) {
+            Flux<MovieEntity> movies = movieRepository.getDistinctMoviesByGenre(genre); // Use the updated query method
+            List<MovieEntity> movieList = Objects.requireNonNull(movies.collectList().block());
+
+            // Add distinct movies from the current genre to the set
+            distinctMovies.addAll(movieList);
+        }
+
+        // If there are more than 25 distinct movies, take the first 25
+
+        return distinctMovies.stream().limit(25).collect(Collectors.toList());
     }
+
+
+
+
 
 }

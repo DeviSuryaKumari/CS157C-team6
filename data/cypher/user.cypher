@@ -4,7 +4,7 @@ MERGE (u:User {username: row.username})
 SET
     u.email = row.email,
     u.password = row.password,
-    u.age = row.age,
+    u.age = toInteger(row.age),
     u.gender = row.gender,
     u.profilePicture = row.profilePicture,
     u.isInitialLogin = row.isInitialLogin

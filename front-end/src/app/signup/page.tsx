@@ -16,19 +16,18 @@ export default function signup() {
         password: string;
         confirmPassword: string;
         gender: string;
-        name: string;
         profilePicture: string;
-        dateOfBirth: string;
+        age: number;
         initialLogin: boolean;
     };
+    const [dateOfBirth, setDateOfBirth] = useState<string>('');
     const [user, setUser] = useState<User>({
-        name: '',
         username: '',
         password: '',
         email: '',
         initialLogin: true,
         confirmPassword: '',
-        dateOfBirth: '',
+        age: 0,
         gender: '',
         profilePicture: 'https://popcorn-picks.s3.us-west-1.amazonaws.com/default_profile_pic.jpg', // Default profile picture if none is provided
     });
@@ -44,8 +43,19 @@ export default function signup() {
     const handleGenderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setUser(prev => ({ ...prev, gender: e.target.value }));
     }
+    const calculateAge = (dateOfBirth: string) => {
+        const today = new Date();
+        const birthDate = new Date(dateOfBirth);
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const month = today.getMonth() - birthDate.getMonth();
+        if (month < 0 || (month === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
+        return age;
+    }
     const handleBirthDateChange = (date: string) => {
-        setUser(prev => ({ ...prev, dateOfBirth: date }));
+        setDateOfBirth(date);
+        setUser(prev => ({ ...prev, age: calculateAge(date) }));
     }
 
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -91,7 +101,7 @@ export default function signup() {
 
     const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
         // Check if all required fields are filled in
-        if (user.name !== '' && user.email !== '' && user.username !== '' && user.password !== '' && user.confirmPassword !== '' && user.dateOfBirth !== '' && user.gender !== '') {
+        if ( user.email !== '' && user.username !== '' && user.password !== '' && user.confirmPassword !== '' && user.age !== 0 && user.gender !== '') {
             if (user.password !== user.confirmPassword) {
                 alert('Passwords do not match');
                 return;
@@ -153,9 +163,6 @@ export default function signup() {
 
 
                             <div className="mx-auto max-w-xs">
-                                <input
-                                    className="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white mt-5"
-                                    type="text" name="name" placeholder="Name" onChange={handleUserInput} />
                                 <input
                                     className="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white mt-5"
                                     type="email" name="email" placeholder="Email" onChange={handleUserInput} />
