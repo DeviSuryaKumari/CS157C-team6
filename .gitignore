@@ -1,6 +1,7 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
+/front-end/.next
 /node_modules
 /front-end/node_modules/
 /front-end/package-lock.json
