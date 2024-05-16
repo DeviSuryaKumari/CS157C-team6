@@ -3,7 +3,7 @@ package com.cs157c.popcornpicks.model;
 import java.util.List;
 import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
-import org.springframework.data.neo4j.core.schema.Relationship;
+//import org.springframework.data.neo4j.core.schema.Relationship;
 
 @Node("Movie")
 public class MovieEntity {
@@ -16,8 +16,8 @@ public class MovieEntity {
 	private final double rating;
 	private final String rating_count;
 	
-	@Relationship(type = "DIRECTED", direction = Relationship.Direction.INCOMING)
-	private final List<DirectorEntity> directors;
+	//@Relationship(type = "DIRECTED", direction = Relationship.Direction.INCOMING)
+	//private final List<DirectorEntity> directors;
 
 	//@Relationship(type = "ACTED_IN", direction = Relationship.Direction.INCOMING)
 	//private final List<ActorEntity> actors;
@@ -28,7 +28,7 @@ public class MovieEntity {
 	private final String poster;
 
 
-	public MovieEntity(String title, int released_year, String duration, String certificate_type, double rating, String rating_count, List<String> genres, String plot, String poster, List<DirectorEntity> directors) {
+	public MovieEntity(String title, int released_year, String duration, String certificate_type, double rating, String rating_count, List<String> genres, String plot, String poster) {
 		this.title = title;
 		this.released_year = released_year;
 		this.duration = duration;
@@ -38,7 +38,8 @@ public class MovieEntity {
 		this.genres = genres;
 		this.plot = plot;
 		this.poster = poster;
-		this.directors = directors;
+		//this.directors = directors;
+		//this.actors = actors;
 	}
 
 	public String getTitle() {
