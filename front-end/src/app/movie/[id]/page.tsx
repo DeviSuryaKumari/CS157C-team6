@@ -8,7 +8,7 @@ import CommentList from '../../components/CommentList';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faStar } from '@fortawesome/free-solid-svg-icons';
+import { faStar, faCalendar } from '@fortawesome/free-solid-svg-icons';
 interface Movie {
     title: string;
     plot: string;
@@ -29,7 +29,7 @@ interface Director {
 
 
 export default function Movie() {
-    
+
 
     const [isUserDetailsRetrieved, setIsUserDetailsRetrieved] = useState<boolean>(false);
     interface UserRetrievedDetails {
@@ -117,7 +117,7 @@ export default function Movie() {
         }).catch((error) => {
             console.log(error);
         });
-    
+
     };
 
     useEffect(() => {
@@ -130,7 +130,7 @@ export default function Movie() {
     }, []);
 
     useEffect(() => {
-        if(movie.title !== "") {
+        if (movie.title !== "") {
             setIsMovieDetailsRetrieved(true);
         }
     }, [movie]);
@@ -152,7 +152,7 @@ export default function Movie() {
                                 </div>
                                 <div className="flex -mx-2 mb-4">
                                     <div className="w-1/2 px-2">
-                                    <Link href="\home"><button className="w-full bg-blue-500 text-white py-2 px-4 rounded-full font-bold hover:bg-gray-800 dark:hover:bg-gray-700">Home</button></Link>
+                                        <Link href="\home"><button className="w-full bg-blue-500 text-white py-2 px-4 rounded-full font-bold hover:bg-gray-800 dark:hover:bg-gray-700">Home</button></Link>
                                     </div>
                                     <div className="w-1/2 px-2">
                                         <button className="w-full bg-yellow-600 text-gray-800 dark:text-white py-2 px-4 rounded-full font-bold hover:bg-gray-300 dark:hover:bg-gray-600">Watch Later</button>
@@ -165,8 +165,10 @@ export default function Movie() {
                                     {movie.plot}
                                 </p>
                                 <div className='flex justify-between items-center my-3'>
-                                    <div className=''>
-                                        
+                                    <div>
+                                        <span className='text-gray-300 font-semibold'><FontAwesomeIcon icon={faCalendar} size='sm' className='text-gray-400 mr-1' />{movie.released_year}</span>
+                                    </div>
+                                    <div>
                                         <span className='text-gray-300 font-semibold'>Rating: <FontAwesomeIcon icon={faStar} size='sm' className='text-yellow-500 mr-1' />{movie.rating}</span>
                                     </div>
                                     <div>
@@ -175,9 +177,9 @@ export default function Movie() {
                                     <div>
                                         <span className='text-gray-300 font-semibold'>Duration: {movie.duration}</span>
                                     </div>
-                                    
+
                                 </div>
-                                
+
                                 <div className="mb-4">
                                     <span className="font-bold text-gray-300">Director(s):</span>
                                     <div className="flex items-center mt-2">
@@ -205,13 +207,12 @@ export default function Movie() {
                                             movie.genres.map((genre, index) => (
                                                 <span key={index} className="text-xs font-medium me-2 px-2.5 py-0.5 rounded-full bg-blue-900 text-blue-300">{genre}</span>
                                             ))
-                                    
-                                        
+
+
                                         }
                                     </div>
                                 </div>
                                 <div>
-                                    <CommentList />
                                 </div>
                             </div>
                         </div>

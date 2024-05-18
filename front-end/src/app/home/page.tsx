@@ -15,7 +15,7 @@ export default function Home() {
         desc: string;
     }
     const [isMoviesRetrieved, setIsMoviesRetrieved] = useState<boolean>(false);
-    
+
 
     const [isUserDetailsRetrieved, setIsUserDetailsRetrieved] = useState<boolean>(false);
     interface UserRetrievedDetails {
@@ -41,6 +41,8 @@ export default function Home() {
 
 
     const [topRatedMovies, setTopRatedMovies] = useState<Movie[]>([]);
+    const [watchLaterMovies, setWatchLaterMovies] = useState<Movie[]>([]);
+    const [recommendedMovies, setRecommendedMovies] = useState<Movie[]>([]);
     const [userRetrievedDetails, setUserRetrievedDetails] = useState<UserRetrievedDetails>({
         email: "",
         username: "",
@@ -83,9 +85,9 @@ export default function Home() {
             });
         };
         getTopRatedMovies();
-    },[]);
+    }, []);
 
-    const [carrouselItems, setCarrouselItems] = useState<Item[] | null >([
+    const [carrouselItems, setCarrouselItems] = useState<Item[] | null>([
 
     ]);
 
@@ -100,7 +102,7 @@ export default function Home() {
         });
         setCarrouselItems(items);
     }
-    
+
 
     useEffect(() => {
         if (topRatedMovies.length > 0) {
@@ -117,15 +119,15 @@ export default function Home() {
     }, [userRetrievedDetails]);
 
     useEffect(() => {
-        if(carrouselItems){
+        if (carrouselItems) {
             if (carrouselItems.length > 0 && carrouselItems) {
                 console.log(carrouselItems);
             }
         }
-        
+
     }, [carrouselItems]);
 
-    
+
 
 
     return (
@@ -161,40 +163,49 @@ export default function Home() {
                     </Link>
                     <div className="flex flex-col mx-auto px-auto rounded-lg w-11/12" id="recommended">
                         <div className="flex overflow-x-scroll pb-10 hide-scroll-bar">
-                            <div className="flex flex-nowrap lg:ml-40 md:ml-20 ml-10 space-x-3 my-2 justify-center">
-                            {
-                                    topRatedMovies.map((movie, index) => {
+                            {recommendedMovies.length > 0 ? (
+                                <div className="flex flex-nowrap lg:ml-40 md:ml-20 ml-10 space-x-3 my-2 justify-center">
+                                    {recommendedMovies.map((movie, index) => {
                                         return (
                                             <div key={index} className="inline-block px-3 w-64">
                                                 <MovieCard movie={movie} />
                                             </div>
                                         );
-                                    })
-                                }
-
-                            </div>
+                                    })}
+                                </div>
+                            ) : (
+                                <div className="w-full flex justify-center items-center">
+                                    <h1 className="text-2xl text-white text-center">No recommended movies</h1>
+                                </div>
+                            )}
                         </div>
                     </div>
+
                     <Link href="/home#watch-later">
                         <div className='flex justify-between items-center w-3/4 mx-auto s:mx-auto md:ms-20 lg:ms-20 my-5' id="watch-later">
                             <h1 className="text-4xl text-left text-balance">Watch Later</h1>
                         </div>
                     </Link>
-                    <div className="flex flex-col mx-auto px-auto rounded-lg w-11/12">
+                    <div className="flex flex-col mx-auto px-auto rounded-lg w-11/12" id="recommended">
                         <div className="flex overflow-x-scroll pb-10 hide-scroll-bar">
-                            <div className="flex flex-nowrap lg:ml-40 md:ml-20 ml-10 space-x-3 my-2 justify-center">
-                            {
-                                    topRatedMovies.map((movie, index) => {
+                            {watchLaterMovies.length > 0 ? (
+                                <div className="flex flex-nowrap lg:ml-40 md:ml-20 ml-10 space-x-3 my-2 justify-center">
+                                    {watchLaterMovies.map((movie, index) => {
                                         return (
                                             <div key={index} className="inline-block px-3 w-64">
                                                 <MovieCard movie={movie} />
                                             </div>
                                         );
-                                    })
-                                }
-                            </div>
+                                    })}
+                                </div>
+                            ) : (
+                                <div className="w-full flex justify-center items-center">
+                                    <h1 className="text-2xl text-white text-center">There are no movies in your watch later list</h1>
+                                </div>
+                            )}
                         </div>
                     </div>
+
                     <Link href="/home#top-rated">
                         <div className='flex justify-between items-center w-3/4 mx-auto s:mx-auto md:ms-20 lg:ms-20 my-5' id="top-rated">
                             <h1 className="text-4xl text-left text-balance">Top Rated Movies</h1>
@@ -203,7 +214,7 @@ export default function Home() {
                     <div className="flex flex-col mx-auto px-auto  rounded-lg w-11/12">
                         <div className="flex overflow-x-scroll pb-10 hide-scroll-bar">
                             <div className="flex flex-nowrap lg:ml-40 md:ml-20 ml-10 space-x-3 my-2 justify-center scrollbar-thumb-gray-700">
-                               
+
                                 {
                                     topRatedMovies.map((movie, index) => {
                                         return (
