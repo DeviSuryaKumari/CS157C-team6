@@ -74,6 +74,18 @@ public class MovieController {
         return distinctMovies.stream().limit(25).collect(Collectors.toList());
     }
 
+    @CrossOrigin(origins = "http://localhost:3000")
+    @PutMapping("/add-movie-to-watch-later")
+    public Mono<MovieEntity> addMovieToWatchLater(@RequestParam String username, @RequestParam String title) {
+        return movieRepository.addMovieToWatchLater(username, title);
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @GetMapping("/watch-later-movies")
+    public Flux<MovieEntity> getWatchLaterMovies(@RequestParam String username) {
+        return movieRepository.getWatchLaterMovies(username);
+    }
+
 
 
 

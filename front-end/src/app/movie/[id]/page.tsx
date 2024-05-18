@@ -119,6 +119,13 @@ export default function Movie() {
         });
 
     };
+    const addMovieToWatchLater = async (movieTitle: string) => {
+        await axios.put(`http://localhost:8080/movies/add-movie-to-watch-later?username=${username}&title=${movieTitle}`).then((response) => {
+            console.log(response.data);
+        }).catch((error) => {
+            console.log(error);
+        });
+    };
 
     useEffect(() => {
         const getMovie = async () => {
@@ -155,7 +162,7 @@ export default function Movie() {
                                         <Link href="\home"><button className="w-full bg-blue-500 text-white py-2 px-4 rounded-full font-bold hover:bg-gray-800 dark:hover:bg-gray-700">Home</button></Link>
                                     </div>
                                     <div className="w-1/2 px-2">
-                                        <button className="w-full bg-yellow-600 text-gray-800 dark:text-white py-2 px-4 rounded-full font-bold hover:bg-gray-300 dark:hover:bg-gray-600">Watch Later</button>
+                                        <button onClick={() => {addMovieToWatchLater(movieTitle)}} className="w-full bg-yellow-600 text-gray-800 dark:text-white py-2 px-4 rounded-full font-bold hover:bg-gray-300 dark:hover:bg-gray-600">Watch Later</button>
                                     </div>
                                 </div>
                             </div>

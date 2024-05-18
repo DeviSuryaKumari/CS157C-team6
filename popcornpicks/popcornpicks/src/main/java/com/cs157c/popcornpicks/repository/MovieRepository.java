@@ -29,5 +29,9 @@ public interface MovieRepository extends ReactiveNeo4jRepository<MovieEntity, St
 	@Query("MATCH (m:Movie) WHERE m.title = $title RETURN m")
 	Mono<MovieEntity> findByTitle(String title);
 
-	Mono<Void> deleteByTitle(String title);
+	@Query("MATCH (u:User {username: $username}), (m:Movie {title:$title}) CREATE (u)-[:WATCH_LATER]->(m) RETURN m")
+	Mono<MovieEntity> addMovieToWatchLater(String username, String title);
+
+	@Query("MATCH (u:User {username: $username})-[:WATCH_LATER]->(m:Movie) RETURN m")
+	Flux<MovieEntity> getWatchLaterMovies(String username);
 }

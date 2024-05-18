@@ -74,18 +74,32 @@ export default function Home() {
             console.log(userRetrievedDetails);
         }
     }, []);
-
+    const getTopRatedMovies = async () => {
+        await axios.get('http://localhost:8080/movies/top50').then((response) => {
+            setTopRatedMovies(response.data);
+            setIsMoviesRetrieved(true);
+        }).catch((error) => {
+            console.log(error);
+        });
+    };
+    const getWatchLaterMovies = async () => {
+        await axios.get(`http://localhost:8080/movies/watch-later-movies?username=${username}`).then((response) => {
+            setWatchLaterMovies(response.data);
+            console.log(response.data);
+        }).catch((error) => {
+            console.log(error);
+        });
+    
+    }
     useEffect(() => {
-        const getTopRatedMovies = async () => {
-            await axios.get('http://localhost:8080/movies/top50').then((response) => {
-                setTopRatedMovies(response.data);
-                setIsMoviesRetrieved(true);
-            }).catch((error) => {
-                console.log(error);
-            });
+        const getMovies = async () => {
+            await getTopRatedMovies();
+            await getWatchLaterMovies();
+            setIsMoviesRetrieved(true);
         };
-        getTopRatedMovies();
+        getMovies();
     }, []);
+
 
     const [carrouselItems, setCarrouselItems] = useState<Item[] | null>([
 
@@ -118,14 +132,7 @@ export default function Home() {
         }
     }, [userRetrievedDetails]);
 
-    useEffect(() => {
-        if (carrouselItems) {
-            if (carrouselItems.length > 0 && carrouselItems) {
-                console.log(carrouselItems);
-            }
-        }
 
-    }, [carrouselItems]);
 
 
 
