@@ -20,6 +20,12 @@ interface Movie {
     rating_count: string;
     poster: string;
 }
+interface Actor {
+    name: string
+}
+interface Director {
+    name: string
+}
 
 
 export default function Movie() {
@@ -69,7 +75,6 @@ export default function Movie() {
 
     const params = useParams<{ id: string }>();
     const movieTitle = params.id;
-    console.log(movieTitle);
     const [movie, setMovie] = useState<Movie>({
         title: "",
         plot: "",
@@ -82,6 +87,8 @@ export default function Movie() {
         poster: ""
     });
     const [isMovieDetailsRetrieved, setIsMovieDetailsRetrieved] = useState<boolean>(false);
+    const [directors, setDirectors] = useState<Director[]>([]);
+    const [actors, setActors] = useState<Actor[]>([]);
 
     const getMovieDetails = async (movieTitle: string) => {
         await axios.get(`http://localhost:8080/movies/${movieTitle}`, {
@@ -91,11 +98,33 @@ export default function Movie() {
         }).catch((error) => {
             console.log(error);
         });
-    }
+    };
+    const getDirectors = async (movieTitle: string) => {
+        await axios.get(`http://localhost:8080/directors/${movieTitle}`, {
+        }).then((response) => {
+            console.log(response.data);
+            setDirectors(response.data);
+        }).catch((error) => {
+            console.log(error);
+        });
+    };
+
+    const getActors = async (movieTitle: string) => {
+        await axios.get(`http://localhost:8080/actors/${movieTitle}`, {
+        }).then((response) => {
+            console.log(response.data);
+            setActors(response.data);
+        }).catch((error) => {
+            console.log(error);
+        });
+    
+    };
 
     useEffect(() => {
         const getMovie = async () => {
             await getMovieDetails(movieTitle);
+            await getDirectors(movieTitle);
+            await getActors(movieTitle);
         };
         getMovie();
     }, []);
@@ -103,7 +132,6 @@ export default function Movie() {
     useEffect(() => {
         if(movie.title !== "") {
             setIsMovieDetailsRetrieved(true);
-            console.log(movie);
         }
     }, [movie]);
 
@@ -119,7 +147,7 @@ export default function Movie() {
                     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="flex flex-col md:flex-row -mx-4">
                             <div className="md:flex-1 px-4">
-                                <div className="h-[460px] rounded-lg bg-gray-300 dark:bg-gray-700 mb-4 max-w-fit">
+                                <div className="h-[460px] rounded-lg dark:bg-gray-700 mb-4 min-w-fit">
                                     <img className="w-full h-full object-contain" src={movie.poster} alt="Movie Image" />
                                 </div>
                                 <div className="flex -mx-2 mb-4">
@@ -132,8 +160,8 @@ export default function Movie() {
                                 </div>
                             </div>
                             <div className="md:flex-1 px-4">
-                                <h2 className="text-3xl font-bold text-gray-800 dark:text-white mb-2">{movie.title}</h2>
-                                <p className="text-gray-600 dark:text-gray-300 text-sm mb-4">
+                                <h2 className="text-3xl font-bold text-white mb-2">{movie.title}</h2>
+                                <p className="text-gray-300 text-sm mb-4">
                                     {movie.plot}
                                 </p>
                                 <div className='flex justify-between items-center my-3'>
@@ -153,16 +181,25 @@ export default function Movie() {
                                 <div className="mb-4">
                                     <span className="font-bold text-gray-300">Director(s):</span>
                                     <div className="flex items-center mt-2">
+                                        {
+                                            directors.map((director, index) => (
+                                                <span key={index} className="text-xs font-medium me-2 px-2.5 py-0.5 rounded-full bg-blue-900 text-blue-300">{director.name}</span>
+                                            ))
+                                        }
                                     </div>
                                 </div>
                                 <div className="mb-4">
                                     <span className="font-bold text-gray-300">Actor(s):</span>
                                     <div className="flex items-center mt-2">
-                                        
+                                        {
+                                            actors.map((actor, index) => (
+                                                <span key={index} className="text-xs font-medium me-2 px-2.5 py-0.5 rounded-full bg-blue-900 text-blue-300">{actor.name}</span>
+                                            ))
+                                        }
                                     </div>
                                 </div>
                                 <div className="mb-4">
-                                    <span className="font-bold text-gray-700 dark:text-gray-300">Genres(s):</span>
+                                    <span className="font-bold text-gray-300">Genres(s):</span>
                                     <div className="flex items-center mt-2">
                                         {
                                             movie.genres.map((genre, index) => (

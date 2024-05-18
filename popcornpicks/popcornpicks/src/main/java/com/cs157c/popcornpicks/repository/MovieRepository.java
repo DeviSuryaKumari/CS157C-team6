@@ -19,11 +19,6 @@ public interface MovieRepository extends ReactiveNeo4jRepository<MovieEntity, St
 	@Query("MATCH (m:Movie) RETURN m ORDER BY m.rating DESC LIMIT 50")
 	Flux<MovieEntity> getTop50Movies();
 
-	@Query("MATCH (d:Director)-[:DIRECTED]->(m:Movie {title: $title}) RETURN d")
-	Flux<DirectorEntity> getDirectorByMovieTitle(String title);
-
-	@Query("MATCH (a:Actor)-[:ACTED_IN]->(m:Movie {title: $title}) RETURN a")
-	Flux<DirectorEntity> getActorsByMovieTitle(String title);
 
 	@Query("MATCH (m:Movie) UNWIND m.genres AS genres WITH DISTINCT genres RETURN COLLECT(genres)")
 	Flux<List<?>> getGenres();
@@ -31,6 +26,7 @@ public interface MovieRepository extends ReactiveNeo4jRepository<MovieEntity, St
 	@Query("MATCH (m:Movie) WHERE $genre IN m.genres RETURN DISTINCT m LIMIT 5")
 	Flux<MovieEntity> getDistinctMoviesByGenre(String genre);
 
+	@Query("MATCH (m:Movie) WHERE m.title = $title RETURN m")
 	Mono<MovieEntity> findByTitle(String title);
 
 	Mono<Void> deleteByTitle(String title);

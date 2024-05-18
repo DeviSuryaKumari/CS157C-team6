@@ -179,21 +179,21 @@ export default function page() {
                     <img className="w-full h-full object-fill" src={userRetrievedDetails.profilePicture} alt="Movie Image" />
                   </div>
                   <div className="w-1/2 px-2">
-                    <button onClick={handleUserUpdate} className="w-full bg-blue-600 text-gray-800 dark:text-white py-2 px-4 rounded-full font-bold hover:bg-gray-300 dark:hover:bg-gray-600">Update Profile</button>
+                    <button onClick={handleUserUpdate} className="w-full bg-blue-600 text-white py-2 px-4 rounded-full font-bold hover:bg-blue-500">Update Profile</button>
                   </div>
                 </div>
                 <div className="md:flex-1 px-4">
                   <div className="mb-6">
-                    <span className="font-bold text-gray-700 dark:text-gray-300">Username - {userRetrievedDetails.username}</span>
+                    <span className="font-bold text-gray-300">Username - {userRetrievedDetails.username}</span>
                   </div>
 
                   <div className="mb-6">
-                    <span className="font-bold text-gray-700 dark:text-gray-300">Email</span>
+                    <span className="font-bold text-gray-300">Email</span>
                     <div className="flex items-center justify-center mt-2 w-full">
                       <div className="w-3/4">
-                        <span className="font-bold text-gray-700 dark:text-gray-300">Current Email - {userRetrievedDetails.email} </span>
+                        <span className="font-bold text-gray-300">Current Email - {userRetrievedDetails.email} </span>
                         <div className='my-2'>
-                          <span className="font-bold text-gray-700 dark:text-gray-300">Update Email </span>
+                          <span className="font-bold text-gray-300">Update Email </span>
                           <input
                             className="w-full px-8 py-3 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white mt-2 text-black"
                             type="email"
@@ -207,7 +207,7 @@ export default function page() {
                   </div>
 
                   <div className="mb-6">
-                    <span className="font-bold text-gray-700 dark:text-gray-300">Password</span>
+                    <span className="font-bold text-gray-300">Password</span>
                     <div className="flex items-center justify-center mt-2 w-full">
                       <div className="w-3/4">
                         <span className="font-bold text-gray-300">
