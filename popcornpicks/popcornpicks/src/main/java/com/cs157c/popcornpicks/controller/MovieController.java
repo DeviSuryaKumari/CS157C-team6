@@ -51,7 +51,6 @@ public class MovieController {
         return Arrays.asList(genres.split(", "));
     }
 
-
     @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping("/movies-by-genres")
     public List<MovieEntity> getMoviesByGenres(@RequestParam List<String> genres) {
@@ -86,8 +85,9 @@ public class MovieController {
         return movieRepository.getWatchLaterMovies(username);
     }
 
-
-
-
-
+    @CrossOrigin(origins = "http://localhost:3000")
+    @GetMapping("/recommendations/{username}")
+    public Flux<MovieEntity> getRecommendationsForUser(@PathVariable String username) {
+        return movieRepository.getRecommendationsForUser(username);
+    }
 }

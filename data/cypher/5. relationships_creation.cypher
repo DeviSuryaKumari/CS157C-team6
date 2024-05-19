@@ -8,7 +8,7 @@ MERGE (devi)-[:FOLLOWS]->(sunidhi)
 MERGE (sunidhi)-[:FOLLOWS]->(oscar)
 MERGE (oscar)-[:FOLLOWS]->(devi)
 
-// Creating :LIKES and :DISLIKES and :WATCH_LATER relationships
+// Creating :LIKED and :DISLIKED and :WATCH_LATER relationships
 
 MATCH (devi:User {username: 'devi'})
 MATCH (inception:Movie {title: 'Inception'})
@@ -22,12 +22,12 @@ MATCH (beautifulMind:Movie {title: 'A Beautiful Mind'})
 MATCH (findingNemo:Movie {title: 'Finding Nemo'})
 
 
-MERGE (devi)-[:LIKES]->(inception)
-MERGE (devi)-[:DISLIKES]->(rebecca)
+MERGE (devi)-[:LIKED]->(inception)
+MERGE (devi)-[:DISLIKED]->(rebecca)
 MERGE (devi)-[:WATCH_LATER]->(matrix)
 
-MERGE (devi)-[:LIKES]->(interstellar)
-MERGE (devi)-[:LIKES]->(spiderMan)
-MERGE (devi)-[:LIKES]->(oppenheimer)
-MERGE (devi)-[:LIKES]->(beautifulMind)
-MERGE (devi)-[:LIKES]->(findingNemo)
+MERGE (devi)-[:LIKED]->(interstellar)
+MERGE (devi)-[:LIKED]->(spiderMan)
+MERGE (devi)-[:LIKED]->(oppenheimer)
+MERGE (devi)-[:LIKED]->(beautifulMind)
+MERGE (devi)-[:LIKED]->(findingNemo)

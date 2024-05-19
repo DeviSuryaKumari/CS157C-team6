@@ -34,4 +34,19 @@ public interface MovieRepository extends ReactiveNeo4jRepository<MovieEntity, St
 
 	@Query("MATCH (u:User {username: $username})-[:WATCH_LATER]->(m:Movie) RETURN m")
 	Flux<MovieEntity> getWatchLaterMovies(String username);
+
+	@Query("CALL {\n" +
+			"    MATCH (user:User {username: $username})-[:FOLLOWS]->(friend:User)-[:LIKED]->(movie:Movie)\n" +
+			"    RETURN movie\n" +
+			"UNION\n" +
+			"    MATCH (user:User {username: $username})-[:LIKED]->(movie2:Movie)\n" +
+			"    MATCH (similarMovie: Movie)\n" +
+			"    WITH apoc.coll.intersection(similarMovie.genres, movie2.genres) as commonGenres, similarMovie\n" +
+			"    WHERE size(commonGenres) > 2\n" +
+			"    RETURN DISTINCT similarMovie as movie\n" +
+			"}\n" +
+			"RETURN movie\n" +
+			"ORDER BY movie.rating DESC\n" +
+			"LIMIT 5")
+	Flux<MovieEntity> getRecommendationsForUser(String username);
 }
