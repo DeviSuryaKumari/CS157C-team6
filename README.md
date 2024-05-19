@@ -4,14 +4,14 @@ The graph data model for our movie recommender app is as follows:
 
 Entities/Node Labels (comma-separated attributes):
 --------------------------------------------------
-1. Movie (title, poster, releasedYear, duration, certificateType, rating, ratingCount, genres, plot) --> With uniqueness constraint on title property
+1. Movie (title, poster, released_year, duration, certificate_type, rating, rating_count, genres, plot) --> With uniqueness constraint on title property
 2. Actor (name) --> With uniqueness constraint on name property
 3. Director (name) --> With uniqueness constraint on name property
 4. User (username, email, password, age, gender, isInitialLogin, profilePicture) --> With existence and uniqueness constraints on username property
 
 Schema Visualization:
 ---------------------
-<img width="1114" alt="Screenshot 2024-05-09 at 1 49 30 AM" src="https://github.com/DeviSuryaKumari/CS157C-team6/assets/11540016/7727114f-0cb4-4810-871c-fd939c3c4787">
+<img width="1031" alt="Screenshot 2024-05-19 at 12 03 04 AM" src="https://github.com/DeviSuryaKumari/CS157C-team6/assets/11540016/be2e967f-6467-41d0-a0d6-2a390d695751">
 
 Notes:
 -----
