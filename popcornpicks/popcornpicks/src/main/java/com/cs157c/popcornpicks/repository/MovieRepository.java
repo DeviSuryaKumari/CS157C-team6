@@ -13,6 +13,11 @@ import java.util.List;
 
 public interface MovieRepository extends ReactiveNeo4jRepository<MovieEntity, String> {
 
+	static final String MATCH_LIKED_TITLES = "OPTIONAL MATCH (user:User {username: $username})-[:LIKED]->(likedMovie:Movie)\n" +
+			"    WITH COLLECT(likedMovie.title) AS likedTitles, likedMovie";
+	static final String MATCH_DISLIKED_TITLES = "OPTIONAL MATCH (user:User {username: $username})-[:DISLIKED]->(dislikedMovie:Movie)\n" +
+			"    WITH likedTitles, COLLECT(dislikedMovie.title) AS dislikedTitles, likedMovie";
+
 	@Query("MATCH (m:Movie) RETURN m")
     Flux<MovieEntity> findAll();
 
@@ -36,14 +41,24 @@ public interface MovieRepository extends ReactiveNeo4jRepository<MovieEntity, St
 	Flux<MovieEntity> getWatchLaterMovies(String username);
 
 	@Query("CALL {\n" +
+			MATCH_LIKED_TITLES +
+			"\n" +
+			MATCH_DISLIKED_TITLES +
+			"\n" +
 			"    MATCH (user:User {username: $username})-[:FOLLOWS]->(friend:User)-[:LIKED]->(movie:Movie)\n" +
+			"    WHERE NOT(movie.title IN dislikedTitles) AND NOT(movie.title IN likedTitles)\n" +
 			"    RETURN movie\n" +
+			"\n" +
 			"UNION\n" +
-			"    MATCH (user:User {username: $username})-[:LIKED]->(movie2:Movie)\n" +
+			"\n" +
+			MATCH_LIKED_TITLES +
+			"\n" +
+			MATCH_DISLIKED_TITLES +
+			"    \n" +
 			"    MATCH (similarMovie: Movie)\n" +
-			"    WITH apoc.coll.intersection(similarMovie.genres, movie2.genres) as commonGenres, similarMovie\n" +
-			"    WHERE size(commonGenres) > 2\n" +
-			"    RETURN DISTINCT similarMovie as movie\n" +
+			"    WITH apoc.coll.intersection(similarMovie.genres, likedMovie.genres) as commonGenres, similarMovie\n" +
+			"    WHERE size(commonGenres) > 1 AND NOT(similarMovie.title IN dislikedTitles) AND NOT(similarMovie.title IN likedTitles)\n" +
+			"    RETURN DISTINCT similarMovie as movie \n" +
 			"}\n" +
 			"RETURN movie\n" +
 			"ORDER BY movie.rating DESC\n" +
