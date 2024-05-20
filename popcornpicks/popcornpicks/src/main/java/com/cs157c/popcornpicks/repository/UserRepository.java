@@ -1,5 +1,6 @@
 package com.cs157c.popcornpicks.repository;
 
+import com.cs157c.popcornpicks.model.MovieEntity;
 import com.cs157c.popcornpicks.model.UserEntity;
 import java.util.List;
 import org.springframework.data.neo4j.repository.ReactiveNeo4jRepository;
@@ -12,6 +13,12 @@ public interface UserRepository extends ReactiveNeo4jRepository<UserEntity, Stri
 
     Mono<UserEntity> findByUsername(String username);
     Flux<UserEntity> findUsersFollowersByUsername(String username);
+
+    @Query("MATCH (u:User {username: $username, password: $password}) RETURN u")
+    Mono<UserEntity> login(String username, String password);
+
+    @Query("MATCH (u:User {username: $followerUsername}), (f:User {username: $followedUsername}) MERGE (u)-[:FOLLOWS]->(f) RETURN u")
+    Mono<UserEntity> followUser(String followerUsername, String followedUsername);
 
     @Query("MATCH (u:User {username: $username}), (m:Movie) WHERE m.title IN $movieTitles MERGE (u)-[:LIKED]->(m)")
     Mono<UserEntity> likeMovies(String username, List<String> movieTitles);
@@ -30,4 +37,5 @@ public interface UserRepository extends ReactiveNeo4jRepository<UserEntity, Stri
 
     @Query("MATCH (u:User {username: $username}) SET u.email = $email RETURN u")
     Mono<UserEntity> updateEmail(String username, String email);
+
 }

@@ -1,5 +1,6 @@
 package com.cs157c.popcornpicks.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Relationship;
@@ -9,7 +10,6 @@ import java.util.Set;
 
 @Node("User")
 public class UserEntity {
-    private String name;
     @Id
     private String username;
     private String password;
@@ -22,15 +22,11 @@ public class UserEntity {
     private Set<MovieEntity> likedMovies = new HashSet<>();
     @Relationship(type = "DISLIKED", direction = Relationship.Direction.OUTGOING)
     private Set<MovieEntity> dislikedMovies = new HashSet<>();
-
     @Relationship(type = "FOLLOWS", direction = Relationship.Direction.OUTGOING)
     private Set<UserEntity> followedUsers = new HashSet<>();
 
-    @Relationship(type = "WATCH_LATER", direction = Relationship.Direction.OUTGOING)
-    private Set<MovieEntity> watchLaterMovies = new HashSet<>();
 
-    public UserEntity(String name, String username, String password, String email, Integer age, String gender, String isInitialLogin, String profilePicture) {
-        this.name = name;
+    public UserEntity(String username, String password, String email, Integer age, String gender, String isInitialLogin, String profilePicture) {
         this.username = username;
         this.password = password;
         this.email = email;
@@ -40,13 +36,6 @@ public class UserEntity {
         this.profilePicture = profilePicture;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 
     public String getUsername() {
         return username;
@@ -128,11 +117,4 @@ public class UserEntity {
         this.followedUsers = followedUsers;
     }
 
-    public Set<MovieEntity> getWatchLaterMovies() {
-        return watchLaterMovies;
-    }
-
-    public void setWatchLaterMovies(Set<MovieEntity> watchLaterMovies) {
-        this.watchLaterMovies = watchLaterMovies;
-    }
 }

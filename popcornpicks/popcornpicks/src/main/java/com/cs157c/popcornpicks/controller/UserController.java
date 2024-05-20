@@ -9,6 +9,7 @@ import java.util.List;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import com.cs157c.popcornpicks.PasswordEncryption;
 
 @RestController
 @RequestMapping("/users")
@@ -23,6 +24,8 @@ public class UserController {
     @CrossOrigin(origins = "http://localhost:3000")
     @PutMapping("/create")
     Mono<ResponseEntity<String>> createUser(@RequestBody UserEntity newUser) {
+        String hashedPassword = PasswordEncryption.hashPassword(newUser.getPassword());
+        UserEntity hashedUser = new UserEntity(newUser.getUsername(), hashedPassword, newUser.getEmail(), newUser.getAge(), newUser.getGender(), newUser.getIsInitialLogin(), newUser.getProfilePicture());
         return userRepository.findByUsername(newUser.getUsername())
                 .flatMap(existingUser -> {
                     // User with the same username already exists
@@ -31,7 +34,7 @@ public class UserController {
                 })
                 .switchIfEmpty(
                         // User with the username doesn't exist, proceed to save
-                        userRepository.save(newUser)
+                        userRepository.save(hashedUser)
                                 .map(savedUser -> ResponseEntity.ok("User created successfully."))
                 );
     };
@@ -62,9 +65,23 @@ public class UserController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping(value = "/by-username", produces = "application/json")
-    Mono<UserEntity> byUsername(@RequestParam String username) {
+    Mono<UserEntity> getUserByUsername(@RequestParam String username) {
         return userRepository.findByUsername(username);
     }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @GetMapping(value = "/login", produces = "application/json")
+    public Mono<ResponseEntity<UserEntity>> login(@RequestParam String username, @RequestParam String password) {
+        return userRepository.findByUsername(username)
+                .flatMap(user -> {
+                    if (PasswordEncryption.verifyPassword(password, user.getPassword())) {
+                        return Mono.just(ResponseEntity.ok(user));
+                    } else {
+                        return Mono.just(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
+                    }
+                });
+    }
+
 
     @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping(value = "/followers-by-username", produces = "application/json")
@@ -74,22 +91,12 @@ public class UserController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @PutMapping("/follow")
-    Mono<Void> followUser(@RequestParam String followerUsername, @RequestParam String followeeUsername) {
-        return userRepository.findByUsername(followerUsername)
-                .flatMap(follower -> userRepository.findByUsername(followeeUsername)
-                        .flatMap(followee -> {
-                            follower.getFollowedUsers().add(followee);
-                            return userRepository.save(follower).then();
-                        }));
+    Mono<UserEntity> followUser(@RequestParam String followerUsername, @RequestParam String followedUsername) {
+        return userRepository.followUser(followerUsername, followedUsername);
     }
+
 
     @CrossOrigin(origins = "http://localhost:3000")
-    @GetMapping(value = "/watch-later-movies-by-username", produces = "application/json")
-    Flux<MovieEntity> watchLaterMoviesByUsername(@RequestParam String username) {
-        return userRepository.findByUsername(username)
-                .flatMapMany(user -> Flux.fromIterable(user.getWatchLaterMovies()));
-    }
-
     @PutMapping("/like-movies")
     public Mono<UserEntity> likeMovies(@RequestParam String username, @RequestParam List<String> movieTitles) {
         return userRepository.likeMovies(username, movieTitles);
@@ -116,7 +123,8 @@ public class UserController {
     @CrossOrigin(origins = "http://localhost:3000")
     @PutMapping("/update-password")
     public Mono<UserEntity> updatePassword(@RequestParam String username, @RequestParam String password) {
-        return userRepository.updatePassword(username, password);
+        String hashedPassword = PasswordEncryption.hashPassword(password);
+        return userRepository.updatePassword(username, hashedPassword);
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
@@ -124,5 +132,6 @@ public class UserController {
     public Mono<UserEntity> updateEmail(@RequestParam String username, @RequestParam String email) {
         return userRepository.updateEmail(username, email);
     }
+
 
 }

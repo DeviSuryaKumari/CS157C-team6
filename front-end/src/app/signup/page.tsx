@@ -18,14 +18,14 @@ export default function signup() {
         gender: string;
         profilePicture: string;
         age: number;
-        initialLogin: boolean;
+        isInitialLogin: string;
     };
     const [dateOfBirth, setDateOfBirth] = useState<string>('');
     const [user, setUser] = useState<User>({
         username: '',
         password: '',
         email: '',
-        initialLogin: true,
+        isInitialLogin: "Yes",
         confirmPassword: '',
         age: 0,
         gender: '',
@@ -57,6 +57,8 @@ export default function signup() {
         setDateOfBirth(date);
         setUser(prev => ({ ...prev, age: calculateAge(date) }));
     }
+
+    
 
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
@@ -128,6 +130,9 @@ export default function signup() {
                     return;
                 }
 
+            }else{
+                await axios.put('http://localhost:8080/users/create', { ...userData });
+                setSuccessfulAccountCreation(true);
             }
             
         } catch (error) {
@@ -142,6 +147,10 @@ export default function signup() {
             router.push('/');
         }
     }, [successfulAccountCreation]);
+
+    useEffect(() => {
+        console.log(user);
+    }, [user])
 
 
 

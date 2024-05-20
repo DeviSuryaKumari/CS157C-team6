@@ -5,6 +5,7 @@ import '@fortawesome/fontawesome-svg-core/styles.css'
 import ProgressBar from '../components/ProgressBar';
 import Cookies from 'js-cookie';
 import axios from 'axios';
+import { useRouter } from 'next/navigation';
 import UserCollectionMovieComponent from '../components/UserCollectionMovieComponent';
 import GenreSelectionCard from '../components/GenreSelectionCard';
 
@@ -74,76 +75,75 @@ export default function SelectionGame() {
     const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
     const [moviesByGenres, setMoviesByGenres] = useState<Movie[]>([]);
     const [isMoviesByGenresRetrieved, setIsMoviesByGenresRetrieved] = useState<boolean>(false);
-    const [likedMovies, setLikedMovies] = useState<Movie[]>([]);
-    const [dislikedMovies, setDislikedMovies] = useState<Movie[]>([]);
+    const [likedMovies, setLikedMovies] = useState<string[]>([]);
+    const [dislikedMovies, setDislikedMovies] = useState<string[]>([]);
     const [progressPercentage, setProgressPercentage] = useState<number>(0);
 
     const handleLikedMovie = (movie: Movie) => {
+        const movieTitle = movie.title;
+
         // Check if the movie is already in the liked list
-        const isAlreadyLiked = likedMovies.some((likedMovie) => likedMovie.title === movie.title);
+        const isAlreadyLiked = likedMovies.includes(movieTitle);
 
         if (isAlreadyLiked) {
             // If the movie is already liked, remove it from the liked list
-            setLikedMovies((prevLikedMovies) => prevLikedMovies.filter((likedMovie) => likedMovie.title !== movie.title));
+            setLikedMovies((prevLikedMovies) => prevLikedMovies.filter((title) => title !== movieTitle));
         } else {
             // If the movie is not liked, add it to the liked list and remove from the disliked list if present
-            setLikedMovies((prevLikedMovies) => [...prevLikedMovies, movie]);
+            setLikedMovies((prevLikedMovies) => [...prevLikedMovies, movieTitle]);
 
             // Remove the movie from the disliked list if present
-            setDislikedMovies((prevDislikedMovies) => prevDislikedMovies.filter((dislikedMovie) => dislikedMovie.title !== movie.title));
+            setDislikedMovies((prevDislikedMovies) => prevDislikedMovies.filter((title) => title !== movieTitle));
         }
     };
 
     const handleDislikedMovie = (movie: Movie) => {
+        const movieTitle = movie.title;
+
         // Check if the movie is already in the disliked list
-        const isAlreadyDisliked = dislikedMovies.some((dislikedMovie) => dislikedMovie.title === movie.title);
+        const isAlreadyDisliked = dislikedMovies.includes(movieTitle);
 
         if (isAlreadyDisliked) {
             // If the movie is already disliked, remove it from the disliked list
-            setDislikedMovies((prevDislikedMovies) =>
-                prevDislikedMovies.filter((dislikedMovie) => dislikedMovie.title !== movie.title)
-            );
+            setDislikedMovies((prevDislikedMovies) => prevDislikedMovies.filter((title) => title !== movieTitle));
         } else {
             // If the movie is not disliked, add it to the disliked list and remove from the liked list if present
-            setDislikedMovies((prevDislikedMovies) => [...prevDislikedMovies, movie]);
+            setDislikedMovies((prevDislikedMovies) => [...prevDislikedMovies, movieTitle]);
 
             // Remove the movie from the liked list if present
-            setLikedMovies((prevLikedMovies) => prevLikedMovies.filter((likedMovie) => likedMovie.title !== movie.title));
+            setLikedMovies((prevLikedMovies) => prevLikedMovies.filter((title) => title !== movieTitle));
         }
     };
-
-
-
-
 
     const handleSelectedGenres = (selectedGenres: string[]) => {
         if (selectedGenres.length === 5) {
             setIsGenresSelected(true);
         }
-    }
+    };
+
     const handleGenreSelect = (genre: string) => {
         if (selectedGenres.length < 5) {
             setSelectedGenres((prevSelectedGenres) => [...prevSelectedGenres, genre]);
         }
-    }
-
-    const getAvailableGenres = async () => {
-        await axios.get('http://localhost:8080/movies/genres')
-            .then((response) => {
-                setAvailableGenres(response.data);
-            }).catch((error) => {
-                console.log(error);
-            });
-    }
-    const getMovies = async () => {
-        await axios.get('http://localhost:8080/movies/top50')
-            .then((response) => {
-                setMovies(response.data);
-            }).catch((error) => {
-                console.log(error);
-            });
     };
 
+    const getAvailableGenres = async () => {
+        try {
+            const response = await axios.get('http://localhost:8080/movies/genres');
+            setAvailableGenres(response.data);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const getMovies = async () => {
+        try {
+            const response = await axios.get('http://localhost:8080/movies/top50');
+            setMovies(response.data);
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
     useEffect(() => {
         const getDetails = async () => {
@@ -155,64 +155,123 @@ export default function SelectionGame() {
         getDetails();
     }, [isUserDetailsRetrieved]);
 
-
     useEffect(() => {
         if (movies.length > 1) {
             setIsMoviesRetrieved(true);
         }
     }, [movies]);
 
-
     useEffect(() => {
         const getMoviesByGenres = async () => {
             if (isGenresSelected && selectedGenres.length === 5) {
-                console.log(selectedGenres);
                 const genresParam = selectedGenres.join(',');
-                await axios.get('http://localhost:8080/movies/movies-by-genres', {
-                    params: {
-                        genres: genresParam
-                    }
-                }).then((response) => {
-                    const moviesResponse = response.data;
-        
-                    // Create a set to store unique movies based on their IDs
-                    const uniqueMoviesSet = []
-        
-                    // Iterate through the movies from the response and add them to the set
-                    moviesResponse.forEach((movie: Movie) => {
-                        if (!uniqueMoviesSet.some((uniqueMovie) => uniqueMovie.title === movie.title)) {
-                            uniqueMoviesSet.push(movie);
-                        }
+                try {
+                    const response = await axios.get('http://localhost:8080/movies/movies-by-genres', {
+                        params: { genres: genresParam }
                     });
-        
-                    // Convert the set back to an array of unique movies
-                    const uniqueMoviesArray = Array.from(uniqueMoviesSet);
-        
-                    // Update the state with the array of unique movies
+                    const moviesResponse = response.data;
+
+                    // Filter unique movies by title
+                    const uniqueMoviesArray = moviesResponse.filter((movie: Movie, index: number, self: Movie[]) =>
+                        index === self.findIndex((m) => m.title === movie.title)
+                    );
+                    setTotalMovies(uniqueMoviesArray.length);
                     setMoviesByGenres(uniqueMoviesArray);
                     setIsMoviesByGenresRetrieved(true);
-                }).catch((error) => {
+                } catch (error) {
                     console.log(error);
-                });
+                }
             }
         };
 
-
-
         getMoviesByGenres();
-    }, [isGenresSelected]);
+    }, [isGenresSelected, selectedGenres]);
 
-    const totalMovies = isGenresSelected ? moviesByGenres.length : 0;
+    const [totalMovies, setTotalMovies] = useState<number>(0);
+
     useEffect(() => {
         if (totalMovies > 0) {
-            console.log(totalMovies);
+            console.log(likedMovies, dislikedMovies);
             const totalSelections = likedMovies.length + dislikedMovies.length;
-            console.log(totalSelections);
             setProgressPercentage(totalSelections > 0 ? (totalSelections / totalMovies) * 100 : 0);
         }
+    }, [likedMovies, dislikedMovies, totalMovies]);
 
-    }, [likedMovies, dislikedMovies]);
+    const submitLikedMovies = async (likedMovies: string[]) => {
+        const params = new URLSearchParams();
+        params.append('username', username);
+        likedMovies.forEach(movie => params.append('movieTitles', movie));
+        await axios.put(`http://localhost:8080/users/like-movies?${params.toString()}`)
+        .then((response) => { console.log(response) })
+            .catch((error) => { console.log(error); });
+    };
+    const submitDislikedMovies = async (dislikedMovies: string[]) => {
+        //const dislikedMoviesParam = likedMovies.join(',');
+        const params = new URLSearchParams();
+        params.append('username', username);
+        dislikedMovies.forEach(movie => params.append('movieTitles', movie));
+        await axios.put(`http://localhost:8080/users/dislike-movies?${params.toString()}`)
+        .then((response) => { console.log(response) })
+            .catch((error) => { console.log(error); });
+    };
 
+    const [isBuildingRecommendations, setIsBuildingRecommendations] = useState<boolean>(false);
+    const [isMovieRelationshipsBuilt, setIsMovieRelationshipsBuilt] = useState<boolean>(false);
+
+    useEffect(() => {
+        const buildLikedDislikedMovies = async () => {
+            if (progressPercentage === 100) {
+                setIsBuildingRecommendations(true);
+                await submitLikedMovies(likedMovies);
+                await submitDislikedMovies(dislikedMovies);
+                setIsMovieRelationshipsBuilt(true);
+            }
+        };
+        buildLikedDislikedMovies();
+    }, [progressPercentage]);
+
+    const [isRecommendationsRetrieved, setIsRecommendationsRetrieved] = useState<boolean>(false);
+    const [recommendedMovies, setRecommendedMovies] = useState<Movie[]>([]);
+    const getRecommendedMovies = async () => {
+        await axios.get(`http://localhost:8080/movies/recommendations/${username}`)
+            .then((response) => {
+                console.log(response)
+                setRecommendedMovies(response.data);
+                setIsRecommendationsRetrieved(true);
+            }).catch((error) => {
+                console.log(error);
+            });
+    };
+
+    useEffect(() => {
+        const getRecommendations = async () => {
+            if (isMovieRelationshipsBuilt) {
+                await getRecommendedMovies();
+            }
+        };
+        getRecommendations();
+    }, [isMovieRelationshipsBuilt]);
+
+    const [isInitialLoginUpdated, setIsInitialLoginUpdated] = useState<boolean>(false);
+    const updateIsIntitialLogin = async () => {
+        await axios.put(`http://localhost:8080/users/update-initial-login?username=${username}`).then(() => {setIsInitialLoginUpdated(true);})
+            .catch((error) => {console.log(error);});
+
+    }
+
+    useEffect(() => {
+        if(isRecommendationsRetrieved && recommendedMovies.length > 0) {
+            updateIsIntitialLogin(); // Recommended movies retrieved, update initial login status
+        }
+    }, [isRecommendationsRetrieved]);
+
+    const router = useRouter();
+
+    useEffect(() => {
+        if(isInitialLoginUpdated) {
+            router.push('/home'); // Redirect to home page after initial login status is updated
+        }
+    }, [isInitialLoginUpdated]);
 
     return (
         <>{!isUserDetailsRetrieved && isMoviesRetrieved ? (

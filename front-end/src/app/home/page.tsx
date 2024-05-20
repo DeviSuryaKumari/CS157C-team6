@@ -82,6 +82,13 @@ export default function Home() {
             console.log(error);
         });
     };
+    const getRecommendedMovies = async () => {
+        await axios.get(`http://localhost:8080/movies/recommendations/${username}`).then((response) => {
+            setRecommendedMovies(response.data);
+        }).catch((error) => {
+            console.log(error);
+        });
+    }
     const getWatchLaterMovies = async () => {
         await axios.get(`http://localhost:8080/movies/watch-later-movies?username=${username}`).then((response) => {
             setWatchLaterMovies(response.data);
@@ -94,6 +101,7 @@ export default function Home() {
     useEffect(() => {
         const getMovies = async () => {
             await getTopRatedMovies();
+            await getRecommendedMovies();
             await getWatchLaterMovies();
             setIsMoviesRetrieved(true);
         };
