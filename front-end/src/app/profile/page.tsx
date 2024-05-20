@@ -108,7 +108,6 @@ export default function page() {
   }
 
 
-
   const handleUserUpdate = async () => {
 
     if (!updatedUserDetails.email && !updatedUserDetails.password && !selectedFile) {
@@ -116,7 +115,7 @@ export default function page() {
       return;
     }
 
-   
+
     try {
       if (selectedFile) { // If a new profile picture is selected, upload it to S3, then update the user details
         const profilePicURL = await handleUpload();
@@ -124,12 +123,14 @@ export default function page() {
           await axios.put(`http://localhost:8080/users/update-profile-picture?username=${username}&profilePicture=${profilePicURL}`);
         }
       }
-      if(updatedUserDetails.email !== ""){
+      if (updatedUserDetails.email !== "") {
         await axios.put(`http://localhost:8080/users/update-email?username=${username}&email=${updatedUserDetails.email}`);
       }
 
-      if(updatedUserDetails.password !== ""){
+      if (updatedUserDetails.password !== "") {
+
         await axios.put(`http://localhost:8080/users/update-password?username=${username}&password=${updatedUserDetails.password}`);
+
       }
       await getUserDetails(username);
       alert('User details updated successfully');
@@ -210,14 +211,6 @@ export default function page() {
                     <span className="font-bold text-gray-300">Password</span>
                     <div className="flex items-center justify-center mt-2 w-full">
                       <div className="w-3/4">
-                        <span className="font-bold text-gray-300">
-                          Current Password - {showPassword ? userRetrievedDetails.password : '*'.repeat(userRetrievedDetails.password.length)}
-                          <FontAwesomeIcon
-                            icon={showPassword ? faEyeSlash : faEye}
-                            className='ms-3 cursor-pointer'
-                            onClick={togglePasswordVisibility}
-                          />
-                        </span>
                         <div className='my-2 relative'>
                           <span className="font-bold text-gray-300">Update Password </span>
                           <input

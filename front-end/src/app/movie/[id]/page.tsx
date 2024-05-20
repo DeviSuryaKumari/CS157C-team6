@@ -121,7 +121,7 @@ export default function Movie() {
     };
     const addMovieToWatchLater = async (movieTitle: string) => {
         await axios.put(`http://localhost:8080/movies/add-movie-to-watch-later?username=${username}&title=${movieTitle}`).then((response) => {
-            console.log(response.data);
+            alert("Movie added to watch later");
         }).catch((error) => {
             console.log(error);
         });

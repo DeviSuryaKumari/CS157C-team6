@@ -33,8 +33,8 @@ export default function GenreSelectionCard({ genres, handleSelectedGenres, paren
         <>
             {showCard && (
                 <div className="fixed top-0 right-0 bottom-0 left-0 bg-black bg-opacity-50 flex justify-center items-center">
-                    <div className="block max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-                        <h5 className="mb-2 text-3xl font-bold tracking-tight text-gray-900 dark:text-white text-balance">
+                    <div className="block max-w-sm p-6 border rounded-lg shadow bg-gray-800 border-gray-700">
+                        <h5 className="mb-2 text-3xl font-bold tracking-tight text-white text-balance">
                             Select Your Top 5 Favorite Movie Genres
                         </h5>
                         <div className="flex flex-wrap gap-2">

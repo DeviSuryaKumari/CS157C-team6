@@ -36,17 +36,19 @@ const LoginPage = () => {
   };
 
   const login = async (user: User) => {
-    await axios.get('http://localhost:8080/users/by-username', {
+    await axios.get('http://localhost:8080/users/login', {
       params: {
-        username: user.username
+        username: user.username,
+        password: user.password
       }
     }).then((response) => {
-      console.log(response.data);
-      if(response.data.password === user.password) {
+      if(response.status === 200) {
+        console.log(response.data);
+        if (response.data.isInitialLogin === "Yes") {
+          setIsInitialLogin(true);
+        }
         setSuccessfulLogin(true);
-      }
-      if (response.data.initialLogin == "Yes") {
-        setIsInitialLogin(true);
+
       }
     }).catch((error) => {
       console.log(error);
@@ -66,7 +68,7 @@ const LoginPage = () => {
     if (successfulLogin && isInitialLogin) { // If successful login and is initial login
       // Redirect to user preference selection page
       Cookies.set('username', user.username);
-      router.push('/home');
+      router.push('/selection-game');
     }
     if(successfulLogin && !isInitialLogin) { // If successful login and not initial login
         // Redirect to home page
@@ -75,7 +77,7 @@ const LoginPage = () => {
         
     }
     setSuccessfulLogin(false);
-  }, [successfulLogin]);
+  }, [successfulLogin, isInitialLogin]);
 
 
   return (
