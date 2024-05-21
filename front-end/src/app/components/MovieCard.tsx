@@ -21,6 +21,7 @@ export default function MovieCard({ movie }: MovieProps) {
     const handleViewDetails = () => {
         window.location.href = `/movie/${movie.title}`;
     };
+    console.log(movie);
 
     return (
         <div className="w-full  min-w-fit max-w-sm hover:outline border  rounded-lg shadow border-gray-700">
@@ -29,7 +30,7 @@ export default function MovieCard({ movie }: MovieProps) {
             </a>
             <div className="px-5 pb-5 text-center">
                 <a href="#">
-                    <h5 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">{movie.title}</h5>
+                    <h5 className="text-xl font-semibold tracking-tight text-white">{movie.title}</h5>
                 </a>
                 <div className="justify-evenly items-center mt-2.5 mb-5 text-start">
                     <p className=' text-lg text-gray-100 font-semibold my-2'>Duration: {movie.duration} </p>
